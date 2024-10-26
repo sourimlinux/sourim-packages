@@ -5,7 +5,7 @@ depends="glibc"
 provides=""
 maintainer="Sigma Semka <bhzrd0@gmail.com>"
 source=(
-    "https://github.com/vim/vim/archive/v9.1.0660/vim-9.1.0660.tar.gz"
+    "https://github.com/vim/vim/archive/v$version/vim-$version.tar.gz"
 )
 
 package() {
