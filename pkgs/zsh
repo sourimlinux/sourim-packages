@@ -3,7 +3,7 @@ version="5.9"
 revision="1"
 depends="glibc gdbm ncurses libcap"
 provides=""
-maintainer="Nikolai Schetko <bhzrd0@gmail.com>"
+maintainer="Sigma Semka <bhzrd0@gmail.com>"
 source=(
     "https://www.zsh.org/pub/zsh-5.9.tar.xz"
 )
