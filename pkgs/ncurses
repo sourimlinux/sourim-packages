@@ -1,6 +1,6 @@
 name="ncurses"
 version="6.4-20230520"
-depends="glibc"
+depends="glibc gcc"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
     "https://anduin.linuxfromscratch.org/LFS/ncurses-$version.tar.xz"
