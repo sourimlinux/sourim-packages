@@ -13,24 +13,4 @@ package() {
     DESTDIR=$1 ./install
 
     mkdir -p $1/etc/sv/{0,1,2,3,4,5,exec}
-
-    mkdir -p $1/etc/sv/exec/mountfs/
-    cat > $1/etc/sv/exec/mountfs/start << EOF
-#!/bin/bash
-
-mkdir -p /{dev,tmp,sys,proc}
-mount -t devtmpfs none /dev
-mount -t tmpfs none /tmp
-mount -t sysfs none /sys
-mount -t proc none /proc
-
-chmod 0777 /tmp
-EOF
-    cat > $1/etc/sv/exec/mountfs/stop << EOF
-#!/bin/bash
-
-for fs in dev tmp sys proc; do
-    umount /\$fs
-done
-EOF
 }

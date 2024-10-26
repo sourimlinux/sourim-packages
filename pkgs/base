@@ -22,23 +22,24 @@ NAME="Sourim"
 PRETTY_NAME="Sourim Linux"
 EOF
 
-    cat > $1/etc/sv/exec/mountfs << EOF
+    mkdir -p $1/etc/sv/exec/mountfs/
+    cat > $1/etc/sv/exec/mountfs/start << EOF
 #!/bin/bash
 
-mount -t tmpfs none /tmp
+mkdir -p /{dev,tmp,sys,proc}
 mount -t devtmpfs none /dev
-mount -t proc none /proc
+mount -t tmpfs none /tmp
 mount -t sysfs none /sys
+mount -t proc none /proc
+
+chmod 0777 /tmp
 EOF
-    
-    cat > $1/etc/sv/exec/bash << EOF
+    cat > $1/etc/sv/exec/mountfs/stop << EOF
 #!/bin/bash
 
-while true; do
-    /bin/bash
+for fs in dev tmp sys proc; do
+    umount /\$fs
 done
 EOF
-
     ln -s /etc/sv/exec/mountfs $1/etc/sv/0/00-mountfs
-    ln -s /etc/sv/exec/bash    $1/etc/sv/5/00-bash
 }
