@@ -1,32 +1,24 @@
 name="vim"
-version="8.1.1846"
-depends="glibc ncurses"
-maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+version="9.1.0660"
+revision="1"
+depends="glibc"
+provides=""
+maintainer="Nikolai Schetko <bhzrd0@gmail.com>"
 source=(
-    "https://github.com/vim/vim/archive/v$version/vim-$version.tar.gz"
+    "https://github.com/vim/vim/archive/v9.1.0660/vim-9.1.0660.tar.gz"
 )
 
 package() {
-    cd $name-$version
-    echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
+    	cd $name-$version
+	echo '#define SYS_VIMRC_FILE  "/etc/vimrc"' >>  src/feature.h &&
+	echo '#define SYS_GVIMRC_FILE "/etc/gvimrc"' >> src/feature.h &&
 
-    ./configure --prefix=/usr
-    make
-    make install DESTDIR=$1
-    ln -sv vim $1/usr/bin/vi
-
-    mkdir -p $1/etc
-    cat > $1/etc/vimrc << "EOF"
-" Ensure defaults are set before customizing settings, not after
-source $VIMRUNTIME/defaults.vim
-let skip_defaults_vim=1 
-
-set nocompatible
-set backspace=2
-set mouse=
-syntax on
-if (&term == "xterm") || (&term == "putty")
-  set background=dark
-endif
-EOF
+	./configure --prefix=/usr        \
+	            --with-features=huge \
+	            --enable-gui=gtk3    \
+	            --with-tlib=ncursesw &&
+	make &&
+	make install DESTDIR=$1
+	mkdir -p $1/usr/share/doc/
+	ln -snfv ../vim/vim91/doc $1/usr/share/doc/vim-9.1.0660
 }
