@@ -5,7 +5,7 @@ depends="glibc gdbm ncurses libcap"
 provides=""
 maintainer="Sigma Semka <bhzrd0@gmail.com>"
 source=(
-    "https://www.zsh.org/pub/zsh-5.9.tar.xz"
+    "https://www.zsh.org/pub/zsh-$version.tar.xz"
 )
 
 package() {
