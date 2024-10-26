@@ -1,0 +1,16 @@
+name="ed"
+version="1.4"
+revision="1"
+depends="glibc"
+provides=""
+maintainer="Sigma Semka <bhzrd0@gmail.com>"
+source=(
+    "http://ftp.man.poznan.pl/gnu/ed/ed-$version.tar.gz"
+)
+
+package() {
+	cd $name-$version
+	./configure --prefix=/usr
+	make &&
+	make install DESTDIR=$1
+}
