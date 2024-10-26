@@ -1,0 +1,43 @@
+name="zsh"
+version="5.9"
+revision="1"
+depends="glibc gdbm ncurses libcap"
+provides=""
+maintainer="Nikolai Schetko <bhzrd0@gmail.com>"
+source=(
+    "https://www.zsh.org/pub/zsh-5.9.tar.xz"
+)
+
+package() {
+	cd $name-$version
+	sed -e 's/set_from_init_file/texinfo_&/' \
+    		-i Doc/Makefile.in
+	
+	sed -e 's/^main/int &/'      \
+    		-e 's/exit(/return(/'    \
+    		-i aczsh.m4 configure.ac &&
+
+	sed -e 's/test = /&(char**)/' \
+    		-i configure.ac           &&
+
+	autoconf
+
+	sed -e 's|/etc/z|/etc/zsh/z|g' \
+    		-i Doc/*.*
+
+	./configure --prefix=/usr            \
+            --sysconfdir=/etc/zsh    \
+            --enable-etcdir=/etc/zsh \
+            --enable-cap             \
+            --enable-gdbm                      &&
+make                                           &&
+
+makeinfo  Doc/zsh.texi --html      -o Doc/html &&
+makeinfo  Doc/zsh.texi --plaintext -o zsh.txt  &&
+makeinfo  Doc/zsh.texi --html --no-split --no-headers -o zsh.html
+
+make install DESTDIR=$1                                                   &&
+make infodir=$1/usr/share/info install.info                       &&
+make htmldir=$1/usr/share/doc/zsh-5.9/html install.html           &&
+install -v -m644 zsh.{html,txt} Etc/FAQ $1/usr/share/doc/zsh-5.9
+}
