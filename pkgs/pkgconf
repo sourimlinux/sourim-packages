@@ -1,0 +1,17 @@
+name="pkgconf"
+version="2.1.0"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://distfiles.ariadne.space/pkgconf/pkgconf-2.1.0.tar.xz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr              \
+                --disable-static
+    make
+    make install DESTDIR=$1
+    ln -sv pkgconf   $1/usr/bin/pkg-config
+    ln -sv pkgconf.1 $1/usr/share/man/man1/pkg-config.1
+}

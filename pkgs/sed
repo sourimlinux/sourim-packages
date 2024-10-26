@@ -1,0 +1,14 @@
+name="sed"
+version="4.9"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "http://mirror.checkdomain.de/gnu/sed/sed-$version.tar.xz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr
+    make
+    make install DESTDIR=$1
+}

@@ -1,0 +1,26 @@
+name="curl"
+version="8.6.0"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://curl.se/download/curl-$version.tar.xz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr                           \
+                --disable-static                        \
+                --with-openssl                          \
+                --enable-threaded-resolver              \
+                --with-ca-path=/etc/ssl/certs &&
+    make 
+    make install DESTDIR=$1
+    rm -rf docs/examples/.deps &&
+    find docs \( -name Makefile\* -o  \
+               -name \*.1       -o  \
+               -name \*.3       -o  \
+               -name CMakeLists.txt \) -delete &&
+
+    mkdir -p $1/usr/share/doc/
+    cp -v -R docs -T $1/usr/share/doc/curl-$version
+}

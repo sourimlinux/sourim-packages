@@ -1,0 +1,12 @@
+name=""
+version=""
+depends="glibc"
+provides=""
+maintainer=""
+source=(
+    ""
+)
+
+package() {
+    cd $name-$version
+}

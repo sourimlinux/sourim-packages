@@ -1,0 +1,22 @@
+name="gcc"
+version="14.2.0"
+depends="glibc binutils mpc mpfr gmp zlib zstd"
+provides="libhwasan.so.0 libtsan.so.2 libubsan.so.1 libasan.so.8 liblsan.so.0 libstdc++.so.6 libm2pim.so.19 libgfortran.so.5 libitm.so.1 libobjc.so.4 libm2iso.so.19 libm2cor.so.19 libgcc_s.so.1 libcc1.so.0 libm2log.so.19 libgomp.so.1 libatomic.so.1 libquadmath.so.0 libm2min.so.19 libssp.so.0"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://ftp.gnu.org/gnu/gcc/gcc-$version/gcc-$version.tar.xz"
+)
+
+package() {
+    cd $name-$version
+    ./contrib/download_prerequisites &&
+    ./configure --prefix=/usr           \
+                --disable-multilib      \
+                --with-system-zlib      \
+                --enable-default-pie    \
+                --enable-default-ssp    \
+                --disable-fixincludes   \
+                --enable-languages=c,c++,fortran,objc,obj-c++,m2 &&
+    make &&
+    make install DESTDIR=$1
+}

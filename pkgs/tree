@@ -1,0 +1,13 @@
+name="tree"
+version="2.1.1"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "git+https://github.com/JetForMe/unix-tree"
+)
+
+package() {
+    cd unix-tree
+    make
+    make PREFIX=$1/usr MANDIR=$1/usr/share/man install DESTDIR=$1
+}

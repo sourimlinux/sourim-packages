@@ -1,0 +1,17 @@
+name="python"
+version="3.12.1"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://www.python.org/ftp/python/$version/Python-$version.tar.xz"
+)
+
+package() {
+    cd Python-$version
+    ./configure --prefix=/usr        \
+            --enable-shared      \
+            --with-system-expat  \
+            --enable-optimizations &&
+    make &&
+    make install DESTDIR=$1
+}

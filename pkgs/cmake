@@ -1,0 +1,20 @@
+name="cmake"
+version="3.31.0-rc2"
+depends="glibc ncurses curl expat libarchive libuv zlib nghttp2 openssl zstd bzip2 xz acl libpsl libssh2 libidn libgcc libstdc++ libunistring"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://github.com/Kitware/CMake/releases/download/v$version/cmake-$version.tar.gz"
+)
+
+package() {
+    cd $name-$version
+    ./bootstrap --prefix=/usr        \
+            --system-libs            \
+            --mandir=/share/man      \
+            --no-system-jsoncpp      \
+            --no-system-cppdap       \
+            --no-system-librhash     \
+            --docdir=/share/doc/cmake-$version
+    make
+    make install DESTDIR=$1
+}

@@ -1,0 +1,14 @@
+name="gzip"
+version="1.13"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://ftp.gnu.org/gnu/gzip/gzip-$version.tar.xz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr
+    make
+    make install DESTDIR=$1
+}

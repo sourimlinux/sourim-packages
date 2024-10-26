@@ -1,0 +1,19 @@
+name="grub"
+version="2.12"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://ftp.gnu.org/gnu/grub/grub-$version.tar.xz"
+)
+
+package() {
+    cd $name-$version
+
+    echo depends bli part_gpt > grub-core/extra_deps.lst &&
+    ./configure --prefix=/usr          \
+                --sysconfdir=/etc      \
+                --disable-efiemu       \
+                --disable-werror &&
+    make &&
+    make install DESTDIR=$1
+}

@@ -1,0 +1,14 @@
+name="freetype"
+version="2.13.3"
+depends="glibc zlib bzip2 libpng brotli"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://download.savannah.gnu.org/releases/freetype/freetype-$version.tar.gz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr --enable-freetype-config --disable-static
+    make
+    make install DESTDIR=$1
+}

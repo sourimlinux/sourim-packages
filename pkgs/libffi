@@ -1,0 +1,14 @@
+name="libffi"
+version="3.2.1"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://sourceware.org/ftp/libffi/libffi-$version.tar.gz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr --disable-static  
+    make
+    make install DESTDIR=$1
+}

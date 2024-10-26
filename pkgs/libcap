@@ -1,0 +1,14 @@
+name="libcap"
+version="2.69"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-$version.tar.xz"
+)
+
+package() {
+    cd $name-$version
+    sed -i '/install -m.*STA/d' libcap/Makefile
+    make prefix=/usr lib=lib
+    make prefix=/usr lib=lib install DESTDIR=$1
+}

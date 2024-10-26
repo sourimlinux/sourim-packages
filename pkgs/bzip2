@@ -1,0 +1,40 @@
+name="bzip2"
+version="1.0.8"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://www.sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz"
+)
+
+package() {
+    cd $name-$version
+    make -f Makefile-libbz2_so
+    make bzip2recover libbz2.a
+    
+    mkdir -p $1/usr/{bin,lib,include}
+    mkdir -p $1/usr/lib/pkgconfig
+
+    install -m 755 bzip2-shared $1/usr/bin/
+    ln -sf bzip2 $1/usr/bin/bunzip2
+	ln -sf bzip2 $1/usr/bin/bzcat
+
+    install -m 755 libbz2.so.$version $1/usr/lib/
+    install -m 644 libbz2.a $1/usr/lib
+    install -m 644 bzlib.h $1/usr/include
+    cat > $1/usr/lib/pkgconfig/bzip2.pc << "EOF"
+prefix=/usr
+exec_prefix=/usr
+bindir=\${exec_prefix}/bin
+libdir=\${exec_prefix}/lib
+includedir=\${prefix}/include
+
+Name: bzip2
+Description: A file compression library
+Version: ${version}
+Libs: -L\${libdir} -lbz2
+Cflags: -I\${includedir}
+EOF
+    ln -s libbz2.so.$version $1/usr/lib/libbz2.so
+	ln -s libbz2.so.$version $1/usr/lib/libbz2.so.1
+	ln -s libbz2.so.$version $1/usr/lib/libbz2.so.1.0
+}

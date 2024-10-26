@@ -1,0 +1,17 @@
+name="acl"
+version="2.3.2"
+depends="glibc attr"
+provides="libacl.so.1"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://download.savannah.gnu.org/releases/acl/acl-$version.tar.xz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr         \
+        --disable-static      \
+        --docdir=/usr/share/doc/acl-$version
+    make
+    make install DESTDIR=$1
+}

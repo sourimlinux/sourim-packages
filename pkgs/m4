@@ -1,0 +1,14 @@
+name="m4"
+version="1.4.19"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "http://mirror.checkdomain.de/gnu/m4/m4-$version.tar.xz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr
+    make
+    make install DESTDIR=$1
+}

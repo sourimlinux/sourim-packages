@@ -1,0 +1,20 @@
+name="libxcrypt"
+version="4.4.36"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://github.com/besser82/libxcrypt/releases/download/v$version/libxcrypt-$version.tar.xz"
+)
+
+package() {
+    cd $name-$version
+
+    ./configure --prefix=/usr                \
+                --enable-hashes=strong,glibc \
+                --enable-obsolete-api=no     \
+                --disable-static             \
+                --disable-failure-tokens
+    
+    make
+    make DESTDIR=$1 install
+}

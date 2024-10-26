@@ -1,0 +1,19 @@
+name="libpng"
+version="1.6.16"
+depends="glibc zlib"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "http://downloads.sourceforge.net/libpng/libpng-$version.tar.xz"
+    "http://downloads.sourceforge.net/libpng-apng/libpng-$version-apng.patch.gz"
+)
+
+package() {
+    cd $name-$version
+    gzip -cd ../libpng-1.6.16-apng.patch.gz | patch -p1
+    ./configure --prefix=/usr        \
+                --disable-static &&
+    make &&
+    make install DESTDIR=$1 && 
+    mkdir -pv $1/usr/share/doc/libpng-$version &&
+    cp -v README libpng-manual.txt $1/usr/share/doc/libpng-$version
+}

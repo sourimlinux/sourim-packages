@@ -1,0 +1,13 @@
+name="iana-etc"
+version="20240125"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    https://github.com/Mic92/iana-etc/releases/download/20240125/iana-etc-20240125.tar.gz
+)
+
+package() {
+    cd $name-$version
+    mkdir -p $1/etc
+    cp services protocols $1/etc
+}

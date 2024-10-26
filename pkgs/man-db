@@ -1,0 +1,23 @@
+name="man-db"
+version="2.12.0"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://download.savannah.gnu.org/releases/man-db/man-db-2.12.0.tar.xz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr                         \
+        --docdir=/usr/share/doc/man-db-2.12.0 \
+        --sysconfdir=/etc                     \
+        --disable-setuid                      \
+        --enable-cache-owner=bin              \
+        --with-browser=/usr/bin/lynx          \
+        --with-vgrind=/usr/bin/vgrind         \
+        --with-grap=/usr/bin/grap             \
+        --with-systemdtmpfilesdir=            \
+        --with-systemdsystemunitdir=
+    make
+    make install DESTDIR=$1
+}

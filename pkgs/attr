@@ -1,0 +1,17 @@
+name="attr"
+version="2.5.2"
+depends="glibc"
+provides="libattr.so.1"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://download.savannah.gnu.org/releases/attr/attr-$version.tar.gz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr     \
+        --disable-static  \
+        --sysconfdir=/etc
+    make
+    make install DESTDIR=$1
+}

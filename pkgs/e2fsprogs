@@ -1,0 +1,26 @@
+name="e2fsprogs"
+version="1.47.0"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://downloads.sourceforge.net/project/e2fsprogs/e2fsprogs/v$version/e2fsprogs-$version.tar.gz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr           \
+         --sysconfdir=/etc       \
+         --enable-elf-shlibs     \
+         --disable-libblkid      \
+         --disable-libuuid       \
+         --disable-uuidd         \
+         --disable-fsck
+    make
+    make install DESTDIR=$1
+    rm -fv $1/usr/lib/{libcom_err,libe2p,libext2fs,libss}.a
+
+    mkdir -p $1/usr/share/info
+    gunzip -v $1/usr/share/info/libext2fs.info.gz
+    install-info --dir-file=$1/usr/share/info/dir $1/usr/share/info/libext2fs.info
+    sed 's/metadata_csum_seed,//' -i $1/etc/mke2fs.conf
+}

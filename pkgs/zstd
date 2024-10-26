@@ -1,0 +1,14 @@
+name="zstd"
+version="1.5.5"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://github.com/facebook/zstd/releases/download/v1.5.5/zstd-1.5.5.tar.gz"
+)
+
+package() {
+    cd $name-$version
+    make prefix=/usr
+    make prefix=/usr install DESTDIR=$1
+    rm -v $1/usr/lib/libzstd.a
+}

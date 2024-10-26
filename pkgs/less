@@ -1,0 +1,14 @@
+name="less"
+version="643"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://www.greenwoodsoftware.com/less/less-$version.tar.gz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr --sysconfdir=/etc
+    make
+    make install DESTDIR=$1
+}

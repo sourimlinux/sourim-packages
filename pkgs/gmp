@@ -1,0 +1,17 @@
+name="gmp"
+version="6.3.0"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "http://mirror.checkdomain.de/gnu/gmp/gmp-$version.tar.xz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr    \
+            --enable-cxx     \
+            --disable-static \
+            --docdir=/usr/share/doc/gmp-$version
+    make
+    make install DESTDIR=$1
+}

@@ -1,0 +1,14 @@
+name="make"
+version="4.4.1"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "http://mirror.checkdomain.de/gnu/make/make-$version.tar.gz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr
+    make
+    make install DESTDIR=$1
+}

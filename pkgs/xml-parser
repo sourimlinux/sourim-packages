@@ -1,0 +1,14 @@
+name="XML-Parser"
+version="2.47"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://cpan.metacpan.org/authors/id/T/TO/TODDR/XML-Parser-$version.tar.gz"
+)
+
+package() {
+    cd $name-$version
+    perl Makefile.PL 
+    make
+    make install DESTDIR=$1
+}

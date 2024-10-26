@@ -1,0 +1,15 @@
+name="expat"
+version="2.6.3"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://github.com/libexpat/libexpat/releases/download/R_2_6_3/expat-$version.tar.xz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr    \
+                --disable-static
+    make
+    make install DESTDIR=$1
+}

@@ -1,0 +1,23 @@
+name="inetutils"
+version="2.5"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "http://mirror.checkdomain.de/gnu/inetutils/inetutils-$version.tar.xz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr        \
+        --bindir=/usr/bin    \
+        --localstatedir=/var \
+        --disable-logger     \
+        --disable-whois      \
+        --disable-rcp        \
+        --disable-rexec      \
+        --disable-rlogin     \
+        --disable-rsh        \
+        --disable-servers &&
+    make && 
+    make install DESTDIR=$1
+}

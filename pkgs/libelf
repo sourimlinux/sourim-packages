@@ -1,0 +1,18 @@
+name="libelf"
+version="0.191"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://sourceware.org/ftp/elfutils/$version/elfutils-$version.tar.bz2"
+)
+
+package() {
+    cd elfutils-$version
+    ./configure --prefix=/usr                \
+        --disable-debuginfod         \
+        --enable-libdebuginfod=dummy
+    make
+    make -C libelf install DESTDIR=$1
+    install -vm644 config/libelf.pc $1/usr/lib/pkgconfig
+    rm $1/usr/lib/libelf.a
+}

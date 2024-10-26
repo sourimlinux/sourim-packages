@@ -1,0 +1,19 @@
+name="readline"
+version="8.2"
+depends="glibc ncurses"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "http://mirror.checkdomain.de/gnu/readline/readline-$version.tar.gz"
+)
+
+package() {
+    cd $name-$version
+    sed -i '/MV.*old/d' Makefile.in
+    sed -i '/{OLDSUFF}/c:' support/shlib-install
+    ./configure --prefix=/usr    \
+                --disable-static \
+                --with-curses    \
+                --docdir=/usr/share/doc/readline-$version
+    make SHLIB_LIBS="-lncursesw"
+    make SHLIB_LIBS="-lncursesw" install DESTDIR=$1
+}

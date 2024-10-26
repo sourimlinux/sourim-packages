@@ -1,0 +1,19 @@
+name="bash"
+version="5.2.21"
+depends="glibc readline ncurses"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "http://mirror.checkdomain.de/gnu/bash/bash-$version.tar.gz"
+)
+
+package() {
+    cd $name-$version
+
+    ./configure --prefix=/usr             \
+                --without-bash-malloc     \
+                --with-installed-readline \
+                --docdir=/usr/share/doc/bash-$version
+
+    make
+    make install DESTDIR=$1
+}

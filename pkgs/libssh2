@@ -1,0 +1,17 @@
+name="libssh2"
+version="1.11.1"
+depends="glibc zlib openssl"
+provides="libssh2.so.1"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://www.libssh2.org/download/libssh2-$version.tar.gz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr          \
+                --disable-docker-tests \
+                --disable-static       &&
+    make &&
+    make install DESTDIR=$1
+}

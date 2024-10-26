@@ -1,0 +1,14 @@
+name="psmisc"
+version="23.6"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://sourceforge.net/projects/psmisc/files/psmisc/psmisc-23.6.tar.xz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr
+    make
+    make install DESTDIR=$1
+}

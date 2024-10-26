@@ -1,0 +1,14 @@
+name="bc"
+version="6.7.5"
+depends="glibc ncurses readline"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://github.com/gavinhoward/bc/releases/download/6.7.5/bc-6.7.5.tar.xz"
+)
+
+package() {
+    cd $name-$version
+    CC=gcc ./configure --prefix=/usr -G -O3 -r
+    make
+    make install DESTDIR=$1
+}

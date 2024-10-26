@@ -1,0 +1,15 @@
+name="iproute2"
+version="6.7.0"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://www.kernel.org/pub/linux/utils/net/iproute2/iproute2-6.7.0.tar.xz"
+)
+
+package() {
+    cd $name-$version
+    sed -i /ARPD/d Makefile
+    rm -fv man/man8/arpd.8
+    make NETNS_RUN_DIR=/run/netns
+    make SBINDIR=/usr/sbin install DESTDIR=$1
+}

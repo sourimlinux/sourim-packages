@@ -1,0 +1,44 @@
+name="base"
+version="1.0"
+depends="bash util-linux bzip2 xz tar coreutils file e2fsprogs sinit"
+provides=""
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+
+)
+
+package() {
+    mkdir -p $1/usr/{bin,lib} $1/etc/sv/{0,1,2,3,4,5,exec} $1/{dev,tmp,proc,sys}
+#    ln -s /usr/bin $1/usr/sbin
+#    ln -s /usr/lib $1/usr/lib32
+#    ln -s /usr/lib $1/usr/lib64
+    ln -s /usr/lib $1/lib32
+    ln -s /usr/lib $1/lib64
+    ln -s /usr/bin $1/bin
+    ln -s /usr/bin $1/sbin
+
+    cat > $1/etc/os-release << EOF
+NAME="Sourim"
+PRETTY_NAME="Sourim Linux"
+EOF
+
+    cat > $1/etc/sv/exec/mountfs << EOF
+#!/bin/bash
+
+mount -t tmpfs none /tmp
+mount -t devtmpfs none /dev
+mount -t proc none /proc
+mount -t sysfs none /sys
+EOF
+    
+    cat > $1/etc/sv/exec/bash << EOF
+#!/bin/bash
+
+while true; do
+    /bin/bash
+done
+EOF
+
+    ln -s /etc/sv/exec/mountfs $1/etc/sv/0/00-mountfs
+    ln -s /etc/sv/exec/bash    $1/etc/sv/5/00-bash
+}

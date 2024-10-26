@@ -1,0 +1,14 @@
+name="check"
+version="0.15.2"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    https://github.com/libcheck/check/releases/download/$version/check-$version.tar.gz
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr --disable-static
+    make
+    make install DESTDIR=$1
+}

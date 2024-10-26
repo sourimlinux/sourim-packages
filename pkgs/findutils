@@ -1,0 +1,14 @@
+name="findutils"
+version="4.9.0"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "http://mirror.checkdomain.de/gnu/findutils/findutils-$version.tar.xz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr --localstatedir=/var/lib/locate
+    make
+    make install DESTDIR=$1
+}

@@ -1,0 +1,21 @@
+name="lynx"
+version="2.9.2"
+depends="glibc wget"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://invisible-mirror.net/archives/lynx/tarballs/lynx$version.tar.bz2"
+)
+
+package() {
+    cd $name$version
+    ./configure --prefix=/usr           \
+                --sysconfdir=/etc/lynx  \
+                --with-zlib             \
+                --with-bzlib            \
+                --with-ssl              \
+                --with-screen=ncursesw  \
+                --enable-locale-charset \
+                --datadir=/usr/share/doc/lynx-2.8.9rel.1
+    make
+    make install-full DESTDIR=$1
+}

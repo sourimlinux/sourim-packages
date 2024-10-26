@@ -1,0 +1,17 @@
+name="procps-ng"
+version="4.0.4"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://sourceforge.net/projects/procps-ng/files/Production/procps-ng-$version.tar.xz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr                           \
+        --docdir=/usr/share/doc/procps-ng-4.0.4 \
+        --disable-static                        \
+        --disable-kill
+    make
+    make install DESTDIR=$1
+}

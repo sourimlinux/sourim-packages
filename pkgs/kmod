@@ -1,0 +1,21 @@
+name="kmod"
+version="31"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://www.kernel.org/pub/linux/utils/kernel/kmod/kmod-$version.tar.xz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr          \
+                --sysconfdir=/etc      \
+                --with-openssl         \
+                --with-xz              \
+                --with-zstd            \
+                --with-zlib
+    
+    ln -sfv kmod $1/usr/bin/lsmod
+    make
+    make install DESTDIR=$1
+}

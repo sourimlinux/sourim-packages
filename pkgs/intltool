@@ -1,0 +1,17 @@
+name="intltool"
+version="0.50.2"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "http://launchpad.net/intltool/trunk/$version/+download/intltool-$version.tar.gz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr
+    make
+    make install DESTDIR=$1
+    mkdir -p $1/usr/share/doc/intltool-$version
+    install -v -m644 -D doc/I18N-HOWTO \
+    $1/usr/share/doc/intltool-0.50.2/I18N-HOWTO
+}

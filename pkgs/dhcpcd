@@ -1,0 +1,19 @@
+name="dhcpcd"
+version="10.0.6"
+depends="glibc"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://github.com/NetworkConfiguration/dhcpcd/releases/download/v$version/dhcpcd-$version.tar.xz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr                \
+                --sysconfdir=/etc            \
+                --libexecdir=/usr/lib/dhcpcd \
+                --dbdir=/var/lib/dhcpcd      \
+                --runstatedir=/run           \
+                --disable-privsep        
+    make
+    make install DESTDIR=$1
+}

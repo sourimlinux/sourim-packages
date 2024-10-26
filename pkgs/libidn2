@@ -1,0 +1,15 @@
+name="libidn2"
+version="2.3.7"
+depends="glibc libunistring"
+provides="libidn2.so.0"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://ftp.gnu.org/gnu/libidn/libidn2-$version.tar.gz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr --disable-static &&
+    make &&
+    make install DESTDIR=$1
+}

@@ -1,0 +1,20 @@
+name="openssl"
+version="3.3.2"
+depends="glibc"
+provides="libcrypto.so.3 libssl.so.3"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://github.com/openssl/openssl/releases/download/openssl-$version/openssl-$version.tar.gz"
+)
+
+package() {
+    cd $name-$version
+    ./config --prefix=/usr         \
+             --openssldir=/etc/ssl \
+             --libdir=lib          \
+             shared                \
+             zlib-dynamic
+    make
+    sed -i '/INSTALL_LIBS/s/libcrypto.a libssl.a//' Makefile
+    make MANSUFFIX=ssl install DESTDIR=$1
+}

@@ -1,0 +1,12 @@
+name="neofetch"
+version="7.1.0"
+depends="bash coreutils"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://github.com/dylanaraps/neofetch/archive/refs/tags/$version.tar.gz"
+)
+
+package() {
+    cd $name-$version
+    make install DESTDIR=$1
+}

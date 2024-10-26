@@ -1,0 +1,120 @@
+#!/bin/bash
+
+source ./conf
+
+STACK_PKGS=""
+
+FLAG_FORCE=
+FLAG_IGNORE=
+FLAG_QUIET=
+
+MAKEPKG_OPTS=
+
+COMMAND=$1
+shift 1
+
+mkdir -p output
+
+show_err() {
+    echo $@ 1>&2
+    exit 2
+}
+usage() {
+    echo "Usage: spkg-src COMMAND OPTIONS PACKAGE(s)"             1>&2
+    echo "Commands:"                                        1>&2
+    echo "  build         Build package from source"        1>&2
+    echo "  build-all     Build all packages from source"   1>&2
+    echo "  help          Show this message"                1>&2
+    echo "Options:"                                         1>&2
+    echo "  -f            Forced to build packages"         1>&2
+    echo "  -q            Quiet build"            1>&2
+    echo "  -i PACKAGEs   Ignore build packages"            1>&2
+    exit 1
+}
+
+while getopts "fqi:" option; do
+    case $option in
+        f)
+            FLAG_FORCE=y
+        ;;
+        i)
+            FLAG_IGNORE=$OPTARG
+        ;;
+        q)
+            FLAG_QUIET=y
+        ;;
+        *)
+            usage
+        ;;
+    esac
+done
+shift $(( OPTIND-1 ))
+if [[ $FLAG_QUIET == y ]]; then
+    MAKEPKG_OPTS+=" -q"
+fi
+if [[ $SKIP_SU_WARNING == y ]]; then
+    MAKEPKG_OPTS+=" -s"
+fi
+
+buildpkg() {
+    [[ $FLAG_IGNORE == *"$1"* ]] && echo "Ignore $1 package"
+    [[ ! -f pkgs/$1 ]]           && show_err "'$1' package not found"
+    
+    cd output || exit 1
+        . ../pkgs/$1 || exit 1
+
+        [[ -z "$revision" ]] && revision="1"
+        if [[ ! -f "$name-${version}_${revision}-`uname -m`.spkg" || ! -z "$FLAG_FORCE" ]]; then
+            echo "> Start building '$1'..."
+            makepkg $MAKEPKG_OPTS -i ../pkgs/$1 || exit 1
+        else
+            echo "> Skipping building '$1'"
+        fi
+    cd ..
+}
+build() {
+    . pkgs/$1 || exit 1
+
+    if [[ "$STACK_PKGS" != *"$1"* ]]; then
+        for depend in $depends; do
+            if [[ "$STACK_PKGS" != *"$depend"* ]]; then
+                build $depend
+                STACK_PKGS+=" $depend"
+            else
+                break
+            fi
+        done
+        buildpkg $1
+    fi
+}
+makeinfo() {
+    cd output || exit 1
+        spkg-rindex *.spkg || exit            
+    cd ..
+    echo "Writing repo info done."
+}
+
+#if [[ -d $HOME/.cache/spkg-makepkg/ ]]; then
+#    echo "Clear cache..."
+#    rm -rf $HOME/.cache/spkg-makepkg/
+#fi
+
+case $COMMAND in
+    build)
+        [[ -z $@ ]] && show_err "error: nothing to build."
+
+        for pkg in $@; do
+            build $pkg
+        done
+        makeinfo
+    ;;
+    build-all)
+        for pkg in `ls pkgs`; do
+            buildpkg $pkg
+        done
+        makeinfo
+    ;;
+    * | help)
+        usage
+    ;;
+esac

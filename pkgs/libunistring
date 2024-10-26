@@ -1,0 +1,17 @@
+name="libunistring"
+version="1.3"
+depends="glibc"
+provides="libunistring.so.5"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://ftp.gnu.org/gnu/libunistring/libunistring-$version.tar.xz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr    \
+                --disable-static \
+                --docdir=/usr/share/doc/libunistring-$version &&
+    make &&
+    make install DESTDIR=$1
+}
