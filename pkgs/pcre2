@@ -1,0 +1,25 @@
+name="pcre2"
+version="10.44"
+revision="1"
+depends="glibc zlib bzip2 ncurses readline"
+provides="libpcre2-16.so.0 libpcre2-8.so.0 libpcre2-32.so.0 libpcre2-posix.so.3"
+maintainer="Sigma Semka <bhzrd0@gmail.com>"
+source=(
+    "https://github.com/PCRE2Project/pcre2/releases/download/pcre2-10.44/pcre2-10.44.tar.bz2"
+)
+
+package() {
+	cd $name-$version
+	./configure --prefix=/usr                       \
+            --docdir=/usr/share/doc/pcre2-10.44 \
+            --enable-unicode                    \
+            --enable-jit                        \
+            --enable-pcre2-16                   \
+            --enable-pcre2-32                   \
+            --enable-pcre2grep-libz             \
+            --enable-pcre2grep-libbz2           \
+            --enable-pcre2test-libreadline      \
+            --disable-static                    &&
+	make &&
+	make install DESTDIR=$1
+}
