@@ -1,0 +1,29 @@
+name="openssh"
+version="9.9p1"
+revision="1"
+depends="glibc zlib openssl"
+provides=""
+maintainer="Sigma Semka <bhzrd0@gmail.com>"
+source=(
+    "https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-$version.tar.gz"
+)
+
+package() {
+	cd $name-$version
+	install -v -g sys -m700 -d $1/var/lib/sshd &&
+	./configure --prefix=/usr                            \
+            --sysconfdir=/etc/ssh                    \
+            --with-privsep-path=/var/lib/sshd        \
+            --with-default-path=/usr/bin             \
+            --with-superuser-path=/usr/sbin:/usr/bin \
+            --with-pid-dir=/run                      &&
+	make &&
+	make install DESTDIR=$1  &&
+	install -v -m755    contrib/ssh-copy-id $1/usr/bin     &&
+
+	install -v -m644    contrib/ssh-copy-id.1 \
+                    $1/usr/share/man/man1              &&
+	install -v -m755 -d $1/usr/share/doc/openssh-9.9p1     &&
+	install -v -m644    INSTALL LICENCE OVERVIEW README* \
+                    $1/usr/share/doc/openssh-9.9p1
+}
