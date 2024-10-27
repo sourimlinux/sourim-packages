@@ -1,6 +1,6 @@
 name="libelf"
 version="0.191"
-depends="glibc"
+depends="glibc zstd zlib xz bzip2"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
     "https://sourceware.org/ftp/elfutils/$version/elfutils-$version.tar.bz2"

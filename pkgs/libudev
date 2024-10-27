@@ -1,0 +1,56 @@
+name="libudev"
+version="256.5"
+revision="1"
+depends="glibc util-linux acl libcap openssl"
+provides="libudev.so.1"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://github.com/systemd/systemd/archive/v$version/systemd-$version.tar.gz"
+)
+
+package() {
+    cd systemd-$version
+
+    sed -i -e 's/GROUP="render"/GROUP="video"/' \
+       -e 's/GROUP="sgx", //' rules.d/50-udev-default.rules.in &&
+    sed '/systemd-sysctl/s/^/#/' -i rules.d/99-systemd.rules.in &&
+    sed '/NETWORK_DIRS/s/systemd/udev/' -i src/basic/path-lookup.h &&
+
+    mkdir -p build
+    cd       build
+
+    meson setup ..                  \
+        --prefix=/usr             \
+        --buildtype=release       \
+        -D mode=release           \
+        -D dev-kvm-mode=0660      \
+        -D link-udev-shared=false \
+        -D logind=false           \
+        -D vconsole=false &&
+    export udev_helpers=$(grep "'name' :" ../src/udev/meson.build | \
+                      awk '{print $3}' | tr -d ",'" | grep -v 'udevadm') &&
+    ninja udevadm systemd-hwdb                                           \
+        $(ninja -n | grep -Eo '(src/(lib)?udev|rules.d|hwdb.d)/[^ ]*') \
+        $(realpath libudev.so --relative-to .)                         \
+        $udev_helpers &&
+
+    mkdir -p $1/usr/{lib,{,s}bin,include} $1/etc
+    install -vm755 -d {$1/usr/lib,$1/etc}/udev/{hwdb.d,rules.d,network}           &&
+    install -vm755 -d $1/usr/{lib,share}/pkgconfig                                &&
+    install -vm755 udevadm                             $1/usr/bin/                &&
+    install -vm755 systemd-hwdb                        $1/usr/bin/udev-hwdb       &&
+    ln      -svfn  ../bin/udevadm                      $1/usr/sbin/udevd          &&
+    cp      -av    libudev.so{,*[0-9]}                 $1/usr/lib/                &&
+    install -vm644 ../src/libudev/libudev.h            $1/usr/include/            &&
+    install -vm644 src/libudev/*.pc                    $1/usr/lib/pkgconfig/      &&
+    install -vm644 src/udev/*.pc                       $1/usr/share/pkgconfig/    &&
+    install -vm644 ../src/udev/udev.conf               $1/etc/udev/               &&
+    install -vm644 rules.d/* ../rules.d/README         $1/usr/lib/udev/rules.d/   &&
+    install -vm644 $(find ../rules.d/*.rules \
+                          -not -name '*power-switch*') $1/usr/lib/udev/rules.d/   &&
+    install -vm644 hwdb.d/*  ../hwdb.d/{*.hwdb,README} $1/usr/lib/udev/hwdb.d/    &&
+    install -vm755 $udev_helpers                       $1/usr/lib/udev            &&
+    install -vm644 ../network/99-default.link          $1/usr/lib/udev/network    &&
+
+    unset udev_helpers
+}

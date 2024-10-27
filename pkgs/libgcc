@@ -1,0 +1,18 @@
+name="libgcc"
+version="14.2.0"
+depends="binutils"
+provides="libgcc_s.so.1"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    
+)
+
+package() {
+    cd ../../gcc/
+    if [[ $? != 0 ]]; then
+        echo "Build gcc first!"
+        exit 1
+    fi
+    
+    cp -rv libgcc/* $1/
+}

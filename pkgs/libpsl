@@ -1,0 +1,21 @@
+name="libpsl"
+version="0.21.5"
+revision="1"
+depends="glibc libidn2 libunistring"
+provides="libpsl.so.5"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://github.com/rockdaboot/libpsl/releases/download/$version/libpsl-$version.tar.gz"
+)
+
+package() {
+    cd $name-$version
+
+    mkdir build &&
+    cd    build &&
+
+    meson setup --prefix=/usr --buildtype=release &&
+
+    ninja &&
+    DESTDIR=$1 ninja install
+}

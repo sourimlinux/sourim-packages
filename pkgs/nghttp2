@@ -1,0 +1,20 @@
+name="nghttp2"
+version="1.64.0"
+revision="1"
+depends="glibc"
+provides="libnghttp2.so.14"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://github.com/nghttp2/nghttp2/releases/download/v$version/nghttp2-$version.tar.xz"
+)
+
+package() {
+    cd $name-$version
+
+    ./configure --prefix=/usr     \
+                --disable-static  \
+                --enable-lib-only \
+                --docdir=/usr/share/doc/nghttp2-$version &&
+    make &&
+    make install DESTDIR=$1
+}

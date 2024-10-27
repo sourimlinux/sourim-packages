@@ -1,13 +1,27 @@
 name="gcc"
 version="14.2.0"
-depends="glibc binutils mpc mpfr gmp zlib zstd"
-provides="libhwasan.so.0 libtsan.so.2 libubsan.so.1 libasan.so.8 liblsan.so.0 libstdc++.so.6 libm2pim.so.19 libgfortran.so.5 libitm.so.1 libobjc.so.4 libm2iso.so.19 libm2cor.so.19 libgcc_s.so.1 libcc1.so.0 libm2log.so.19 libgomp.so.1 libatomic.so.1 libquadmath.so.0 libm2min.so.19 libssp.so.0"
+depends="binutils"
+provides="libhwasan.so.0 libtsan.so.2 libubsan.so.1 libasan.so.8 liblsan.so.0 libm2pim.so.19 libgfortran.so.5 libitm.so.1 libobjc.so.4 libm2iso.so.19 libm2cor.so.19 libcc1.so.0 libm2log.so.19 libgomp.so.1 libatomic.so.1 libquadmath.so.0 libm2min.so.19 libssp.so.0"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
     "https://ftp.gnu.org/gnu/gcc/gcc-$version/gcc-$version.tar.xz"
 )
 
 package() {
+    case `uname -m` in
+        i686) _triplet="i686-pc-linux-gnu";;
+        x86_64) _triplet="x86_64-pc-linux-gnu";;
+        armv5tel) _triplet="arm-linux-gnueabi";;
+        armv6l) _triplet="arm-linux-gnueabihf";;
+        armv7l) _triplet="armv7l-linux-gnueabihf";;
+        aarch64) _triplet="aarch64-linux-gnu";;
+        ppc) _triplet="powerpc-linux-gnu";;
+        ppcle) _triplet="powerpcle-linux-gnu";;
+        ppc64le) _triplet="powerpc64le-linux-gnu";;
+        ppc64) _triplet="powerpc64-linux-gnu";;
+        riscv64) _triplet="riscv64-linux-gnu";;
+    esac
+
     cd $name-$version
     ./contrib/download_prerequisites &&
     ./configure --prefix=/usr           \
@@ -19,4 +33,16 @@ package() {
                 --enable-languages=c,c++,fortran,objc,obj-c++,m2 &&
     make &&
     make install DESTDIR=$1
+
+    # libgcc package
+    mkdir -pv $1/../libgcc/usr/lib64/gcc $1/../libgcc/usr/lib/gcc/${_triplet}/${version}
+    mv -v $1/usr/lib64/libgcc_s.so* $1/../libgcc/usr/lib64
+    mv -v $1/usr/lib/gcc/${_triplet}/${version}/*.o $1/../libgcc/usr/lib/gcc/${_triplet}/${version}
+    mv -v $1/usr/lib/gcc/${_triplet}/${version}/*.a $1/../libgcc/usr/lib/gcc/${_triplet}/${version}
+
+    # libstdc++ package
+    mkdir -pv $1/../libstdc++/usr/{include,lib64}
+    mv -v $1/usr/lib64/libstdc++* $1/../libstdc++/usr/lib64
+    mv -v $1/usr/lib64/libsupc++* $1/../libstdc++/usr/lib64
+    mv -v $1/usr/include/c++ $1/../libstdc++/usr/include
 }

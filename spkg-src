@@ -67,8 +67,8 @@ buildpkg() {
         if [[ ! -f "$name-${version}_${revision}-`uname -m`.spkg" || ! -z "$FLAG_FORCE" ]]; then
             echo "> Start building '$1'..."
             makepkg $MAKEPKG_OPTS -i ../pkgs/$1 || exit 1
-        else
-            echo "> Skipping building '$1'"
+        #else
+            #echo "> Skipping building '$1'"
         fi
     cd ..
 }

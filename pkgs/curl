@@ -1,6 +1,6 @@
 name="curl"
 version="8.6.0"
-depends="glibc"
+depends="glibc libidn2 openssl zlib brotli libssh2 libunistring nghttp2 libpsl"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
     "https://curl.se/download/curl-$version.tar.xz"
