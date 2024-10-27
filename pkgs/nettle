@@ -1,0 +1,19 @@
+name="nettle"
+version="3.10"
+revision="1"
+depends="glibc gmp"
+provides="libnettle.so.8 libhogweed.so.6"
+maintainer="Sigma Semka <bhzrd0@gmail.com>"
+source=(
+    "https://ftp.gnu.org/gnu/nettle/nettle-$version.tar.gz"
+)
+
+package() {
+	cd $name-$version
+	./configure --prefix=/usr --disable-static &&
+	make &&
+	make install DESTDIR=$1 &&
+	chmod   -v   755 $1/usr/lib/lib{hogweed,nettle}.so &&
+	install -v -m755 -d $1/usr/share/doc/nettle-3.10 &&
+	install -v -m644 nettle.{html,pdf} $1/usr/share/doc/nettle-3.10
+}
