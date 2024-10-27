@@ -1,0 +1,17 @@
+name="fish"
+version="3.7.1"
+revision="1"
+depends="libstdc++ ncurses libgcc"
+provides=""
+maintainer="Nikita Belov <nikita2010belov@gmail.com>"
+source=(
+    "https://github.com/fish-shell/fish-shell/releases/download/$version/fish-$version.tar.xz"
+)
+
+package() {
+	cd $name-$version
+	mkdir build; cd build
+	cmake ..
+	make
+	make install DESTDIR=$1
+}
