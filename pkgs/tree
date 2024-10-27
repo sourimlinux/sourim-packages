@@ -1,13 +1,15 @@
 name="tree"
-version="2.1.1"
+version="2.1.3"
+revision="1"
 depends="glibc"
-maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+provides=""
+maintainer="Sigma Semka <bhzrd0@gmail.com>"
 source=(
-    "git+https://github.com/JetForMe/unix-tree"
+    "https://gitlab.com/OldManProgrammer/unix-tree/-/archive/$version/unix-tree-$version.tar.bz2"
 )
 
 package() {
-    cd unix-tree
-    make
-    make PREFIX=$1/usr MANDIR=$1/usr/share/man install DESTDIR=$1
+	cd unix-tree-$version
+	make &&
+	make PREFIX=$1/usr MANDIR=$1/usr/share/man install
 }
