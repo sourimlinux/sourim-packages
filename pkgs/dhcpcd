@@ -7,13 +7,13 @@ source=(
 )
 
 package() {
-    cd $name-$version
-    ./configure --prefix=/usr                \
-                --sysconfdir=/etc            \
-                --libexecdir=/usr/lib/dhcpcd \
-                --dbdir=/var/lib/dhcpcd      \
-                --runstatedir=/run           \
-                --disable-privsep        
-    make
-    make install DESTDIR=$1
+	cd $name-$version
+	./configure --prefix=/usr                \
+            --sysconfdir=/etc            \
+            --libexecdir=/usr/lib/dhcpcd \
+            --dbdir=/var/lib/dhcpcd      \
+            --runstatedir=/run           \
+            --disable-privsep         &&
+	make &&
+	make install DESTDIR=$1
 }
