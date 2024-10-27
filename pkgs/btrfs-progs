@@ -1,0 +1,22 @@
+name="btrfs-progs"
+version="6.11"
+revision="1"
+depends="glibc libudev util-linux lzo zstd zlib"
+provides="libbtrfsutil.so.1 libbtrfs.so.0"
+maintainer="Sigma Semka <bhzrd0@gmail.com>"
+source=(
+    "https://www.kernel.org/pub/linux/kernel/people/kdave/btrfs-progs/btrfs-progs-v$version.tar.xz"
+)
+
+package() {
+	cd $name-v$version
+	
+	./configure --prefix=/usr           \
+            --disable-static &&
+	make &&
+	make install DESTDIR=$1 &&
+	for i in 5 8; do
+   		install Documentation/*.$i $1/usr/share/man/man$i
+	done
+	
+}
