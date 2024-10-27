@@ -1,0 +1,22 @@
+name="nasm"
+version="2.16.03"
+revision="1"
+depends="glibc"
+provides=""
+maintainer="Sigma Semka <bhzrd0@gmail.com>"
+source=(
+    "https://www.nasm.us/pub/nasm/releasebuilds/$version/nasm-$version.tar.xz"
+    "https://www.nasm.us/pub/nasm/releasebuilds/$version/nasm-$version-xdoc.tar.xz"
+)
+
+package() {
+	cd $name-$version
+	tar -xf ../nasm-2.16.03-xdoc.tar.xz --strip-components=1 &&
+	./configure --prefix=/usr &&
+	make &&
+	make install DESTDIR=$1 &&
+	install -m755 -d        $1/usr/share/doc/nasm-2.16.03/html  &&
+	cp -v doc/html/*.html    $1/usr/share/doc/nasm-2.16.03/html  &&
+	cp -v doc/*.{txt,ps,pdf} $1/usr/share/doc/nasm-2.16.03
+	
+}
