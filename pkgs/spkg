@@ -1,0 +1,15 @@
+name="spkg"
+version="1.0"
+revision="1"
+depends="bash coreutils tar xz util-linux"
+provides=""
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "git+https://github.com/sourimlinux/spkg"
+)
+
+package() {
+    cd spkg
+
+    DESTDIR=$1 ./install
+}

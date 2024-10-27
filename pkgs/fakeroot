@@ -1,0 +1,23 @@
+name="fakeroot"
+version="1.36"
+revision="1"
+depends="glibc"
+provides=""
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://salsa.debian.org/clint/fakeroot/-/archive/upstream/$version/fakeroot-upstream-$version.tar.gz"
+)
+
+package() {
+    cd fakeroot-upstream-$version
+
+	sed -i scripts/fakeroot.in -e 's/@LDPRELOADABS@/1/' &&
+	sed -i doc/Makefile.am -e '/SUBDIRS/d' &&
+	sed -i test/Makefile.am \
+		-e '/  t\.tar/d' &&
+    
+    ./bootstrap &&
+    ./configure --prefix=/usr &&
+    make &&
+    make install DESTDIR=$1
+}

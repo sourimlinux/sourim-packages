@@ -1,6 +1,6 @@
 name="base"
 version="1.0"
-depends="bash util-linux bzip2 xz tar coreutils file e2fsprogs sinit"
+depends="bash util-linux bzip2 xz tar coreutils file e2fsprogs sinit findutils"
 provides=""
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
@@ -22,7 +22,7 @@ NAME="Sourim"
 PRETTY_NAME="Sourim Linux"
 EOF
 
-### SPKG SERVICES
+### SPKG SERVICES: mountfs
     mkdir -p $1/etc/sv/exec/mountfs/
     cat > $1/etc/sv/exec/mountfs/start << EOF
 #!/bin/bash
@@ -42,7 +42,25 @@ for fs in dev tmp sys proc; do
     umount /\$fs
 done
 EOF
+### SPKG SERVICES: net_interface
+    mkdir -p $1/etc/sv/exec/net_interface
+    cat > $1/etc/sv/exec/net_interface/start << EOF
+#!/bin/bash
+
+for inter in \`cat /etc/net_interface\`; do
+    ip link set \$inter up
+done
+EOF
+    cat > $1/etc/sv/exec/net_interface/stop << EOF
+#!/bin/bash
+
+for inter in \`cat /etc/net_interface\`; do
+    ip link set \$inter down
+done
+EOF
+
     ln -s /etc/sv/exec/mountfs $1/etc/sv/0/00-mountfs
+    ln -s /etc/sv/exec/net_interface $1/etc/sv/0/10-net_interface
 
 
 # /etc/protocols
@@ -184,5 +202,8 @@ aggfrag      144 AGGFRAG
 nsh          145 NSH
 reserved     255 Reserved
 EOF
-    
+# /etc/net_interface
+    cat > $1/etc/net_interface << EOF
+
+EOF
 }

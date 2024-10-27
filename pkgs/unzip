@@ -1,0 +1,21 @@
+name="unzip"
+version="6.0"
+revision="1"
+depends="bzip2"
+provides=""
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://downloads.sourceforge.net/infozip/unzip${version/./}.tar.gz"
+    "https://www.linuxfromscratch.org/patches/blfs/svn/unzip-6.0-consolidated_fixes-1.patch"
+    "https://www.linuxfromscratch.org/patches/blfs/svn/unzip-6.0-gcc14-1.patch"
+)
+
+package() {
+    cd unzip${version/./}
+
+    patch -Np1 -i ../unzip-6.0-consolidated_fixes-1.patch &&
+    patch -Np1 -i ../unzip-6.0-gcc14-1.patch &&
+    make -f unix/Makefile generic &&
+    make prefix=$1/usr MANDIR=$1/usr/share/man/man1 \
+        -f unix/Makefile install
+}

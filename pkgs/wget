@@ -1,0 +1,19 @@
+name="wget"
+version="1.24.5"
+revision="1"
+depends="glibc libpsl make-ca"
+provides=""
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://ftp.gnu.org/gnu/wget/wget-$version.tar.gz"
+)
+
+package() {
+    cd $name-$version
+
+    ./configure --prefix=/usr      \
+                --sysconfdir=/etc  \
+                --with-ssl=openssl &&
+    make &&
+    make DESTDIR=$1 install
+}

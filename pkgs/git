@@ -1,0 +1,23 @@
+name="git"
+version="2.46.0"
+revision="1"
+depends="curl"
+provides=""
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://www.kernel.org/pub/software/scm/git/git-$version.tar.xz"
+)
+
+package() {
+    cd $name-$version
+
+    ./configure --prefix=/usr \
+                --with-gitconfig=/etc/gitconfig \
+                --with-python=python3 &&
+    make &&
+    make html &&
+    make man &&
+    make perllibdir=/usr/lib/perl5/5.40/site_perl DESTDIR=$1 install &&
+    make DESTDIR=$1 install-man &&
+    make htmldir=/usr/share/doc/git-$version DESTDIR=$1 install-html
+}

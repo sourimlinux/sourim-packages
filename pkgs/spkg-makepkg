@@ -1,0 +1,15 @@
+name="spkg-makepkg"
+version="1.0"
+revision="1"
+depends="bash coreutils tar xz util-linux unzip git wget findutils fakeroot"
+provides=""
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "git+https://github.com/sourimlinux/makepkg"
+)
+
+package() {
+    cd makepkg
+
+    DESTDIR=$1 ./install
+}

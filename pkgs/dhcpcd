@@ -16,4 +16,18 @@ package() {
             --disable-privsep         &&
 	make &&
 	make install DESTDIR=$1
+
+    mkdir -p $1/etc/sv/exec/dhcpcd
+    cat > $1/etc/sv/exec/dhcpcd/start << EOF
+#!/bin/bash
+
+INTERFACE="eth0"
+dhcpcd $INTERFACE
+EOF
+    cat > $1/etc/sv/exec/dhcpcd/stop << EOF
+#!/bin/bash
+
+INTERFACE="eth0"
+dhcpcd -x $INTERFACE
+EOF
 }
