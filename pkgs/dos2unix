@@ -1,0 +1,15 @@
+name="dos2unix"
+version="7.5.2"
+revision="1"
+depends="glibc"
+provides=""
+maintainer="Sigma Semka <bhzrd0@gmail.com>"
+source=(
+    "https://downloads.sourceforge.net/dos2unix/dos2unix-$version.tar.gz"
+)
+
+package() {
+	cd $name-$version
+	make &&
+	make install DESTDIR=$1
+}
