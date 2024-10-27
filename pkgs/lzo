@@ -1,0 +1,19 @@
+name="lzo"
+version="2.10"
+revision="1"
+depends="glibc"
+provides="liblzo2.so.2"
+maintainer="Sigma Semka <bhzrd0@gmail.com>"
+source=(
+    "https://www.oberhumer.com/opensource/lzo/download/lzo-$version.tar.gz"
+)
+
+package() {
+	cd $name-$version
+	./configure --prefix=/usr                    \
+            --enable-shared                  \
+            --disable-static                 \
+            --docdir=/usr/share/doc/lzo-2.10 &&
+	make &&
+	make install DESTDIR=$1
+}
