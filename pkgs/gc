@@ -1,0 +1,20 @@
+name="gc"
+version="8.2.8"
+revision="1"
+depends="glibc libgcc libstdc++"
+provides="libgccpp.so.1 libgctba.so.1 libgc.so.1 libcord.so.1"
+maintainer="Sigma Semka <bhzrd0@gmail.com>"
+source=(
+    "https://github.com/ivmai/bdwgc/releases/download/v$version/gc-$version.tar.gz"
+)
+
+package() {
+	cd $name-$version
+	./configure --prefix=/usr      \
+            --enable-cplusplus \
+            --disable-static   \
+            --docdir=/usr/share/doc/gc-8.2.8 &&
+	make &&
+	make install DESTDIR=$1  &&
+	install -v -m644 doc/gc.man $1/usr/share/man/man3/gc_malloc.3
+}
