@@ -1,0 +1,19 @@
+name="libatomic_ops"
+version="7.8.2"
+revision="1"
+depends="glibc"
+provides="libatomic_ops.so.1 libatomic_ops_gpl.so.1"
+maintainer="Sigma Semka <bhzrd0@gmail.com>"
+source=(
+    "https://github.com/ivmai/libatomic_ops/releases/download/v$version/libatomic_ops-$version.tar.gz"
+)
+
+package() {
+	cd $name-$version
+	./configure --prefix=/usr    \
+            --enable-shared  \
+            --disable-static \
+            --docdir=/usr/share/doc/libatomic_ops-7.8.2 &&
+	make &&
+	make install DESTDIR=$1
+}
