@@ -1,0 +1,17 @@
+name="libtasn1"
+version="4.19.0"
+revision="1"
+depends="glibc"
+provides=""
+maintainer="Nikita Belov <nikita2010belov@gmail.com>"
+source=(
+    "https://ftp.gnu.org/gnu/libtasn1/libtasn1-$version.tar.gz"
+)
+
+package() {
+	cd $name-$version
+	./configure --prefix=/usr --disable-static &&
+	make
+	make install DESTDIR=$1
+	make -C doc/reference install-data-local DESTDIR=$1
+}
