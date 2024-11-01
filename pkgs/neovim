@@ -1,0 +1,80 @@
+name="neovim"
+pkgver="0.11.0.r711.g7b7c95dac9"
+revision="1"
+depends=(
+  "libluv"
+  "libutf8proc"
+  "libuv"
+  "lua51-lpeg"
+  "luajit"
+  "msgpack-c"
+  "tree-sitter-c"
+  "tree-sitter-lua"
+  "tree-sitter-markdown"
+  "tree-sitter-query"
+  "tree-sitter-vimdoc"
+  "tree-sitter-vim"
+  "tree-sitter>=0.22.2"
+  "unibilium"
+  "cmake"
+  "git"
+  "ninja"
+  "unzip"
+)
+makedepends=()
+provides="("neovim=${version/\.r*/}" 'vim-plugin-runtime')"
+source=(
+  "git+https://github.com/neovim/neovim.git"
+  nvimdoc{,.hook}
+)
+# да пошёл ты на
+#sha512sums=('SKIP'
+#            '22662462c823de243599cdd3483e46ade4ab59b219e907468d34c18e584fe7477548e357ee2ce56bb098cf54b770b108a3511703dd486f0774a65c84af78f6aa'
+#            '3c6ee1e4646d09c164a2212f9e4d2f53158ff32911b0972e060a395a8d4685334574a7ede995a81680dcc0750cd3327a78beb7904a4bb326b2399d79a8b12d5e')
+#b2sums=('SKIP'
+#        'd31cf81659e238fada8092755eb9be16f77c00a466107eb5770c6c9c32e043c91e6efada7ddb51663716a0e38ffa6e3d0093b3e6833aa961d845c7451a95491e'
+#        '26588b9da6459393076723bdfb8d2b16fed882070f2326bf7c35cd272dee9c18df603afb1ae2254cd0a59eff68189caf04828ef165d5de42c7a4222267604101')
+
+# и ты тоже
+#pkgver() {
+#
+#  local nvim_version nvim_version_git
+#  nvim_version="$(sed -nE '/NVIM_VERSION_/ s/.* +([0-9]+)\).*/\1/p' ./CMakeLists.txt | sed ':b;N;$!bb;s/\n/\./g')"
+#  nvim_version_git="$(git describe --first-parent --always | sed -E 's/^v[0-9]+.[0-9]+.[0-9]+-//; s/^([0-9]+)-([a-z0-9]+)/\1\.\2/')"
+#  printf "%s.r%s\n" "$nvim_version" "$nvim_version_git"
+#}
+
+build() {
+  cd neovim
+
+  # Use bundled utf8proc until upstream pins back to a stable release
+  cmake -S cmake.deps -B .deps -G Ninja -DUSE_BUNDLED=OFF -DUSE_BUNDLED_UTF8PROC=ON
+  cmake --build .deps
+
+  cmake \
+    -Bbuild \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -G Ninja \
+    -W no-dev
+  cmake --build build
+}
+
+check() {
+  cd "neovim"
+  ./build/bin/nvim --version
+  ./build/bin/nvim --headless -u NONE -i NONE +q
+}
+
+package() {
+  install -Dm644 -t "$1/usr/share/libalpm/hooks/" nvimdoc.hook
+  install -Dt "$1/usr/share/libalpm/scripts/" nvimdoc
+
+  cd "neovim"
+  DESTDIR="$1" cmake --install build
+
+  install -Dm644 LICENSE.txt -t "${1}/usr/share/licenses/${pkgname}/"
+  install -Dm644 runtime/nvim.desktop -t "${1}/usr/share/applications/"
+  install -Dm644 runtime/nvim.appdata.xml -t "${1}/usr/share/metainfo/"
+  install -Dm644 runtime/nvim.png -t "${1}/usr/share/pixmaps/"
+}
