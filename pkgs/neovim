@@ -1,6 +1,7 @@
 name="neovim"
 version="0.11.0.r711.g7b7c95dac9"
 revision="1"
+maintainer="Vladimir Vlaicu <webe-not-inc@proton.me> or <gamma5207@gmail.com>"
 depends="libluv libutf8proc libuv lua51-lpeg luajit msgpack-c tree-sitter-c tree-sitter-lua tree-sitter-markdown tree-sitter-query tree-sitter-vimdoc tree-sitter-vim tree-sitter unibilium cmake git ninja unzip"
 provides="("neovim=${version/\.r*/}")"
 source=(
