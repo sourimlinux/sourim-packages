@@ -2,10 +2,9 @@ name="neovim"
 pkgver="0.11.0.r711.g7b7c95dac9"
 revision="1"
 depends="libluv libutf8proc libuv lua51-lpeg luajit msgpack-c tree-sitter-c tree-sitter-lua tree-sitter-markdown tree-sitter-query tree-sitter-vimdoc tree-sitter-vim tree-sitter unibilium cmake git ninja unzip"
-provides="("neovim=${version/\.r*/}" 'vim-plugin-runtime')"
+provides="("neovim=${version/\.r*/}")"
 source=(
   "git+https://github.com/neovim/neovim.git"
-  nvimdoc{,.hook}
 )
 # да пошёл ты на
 #sha512sums=('SKIP'
@@ -24,7 +23,7 @@ source=(
 #  printf "%s.r%s\n" "$nvim_version" "$nvim_version_git"
 #}
 
-build() {
+package() {
   cd neovim
 
   # Use bundled utf8proc until upstream pins back to a stable release
@@ -38,15 +37,7 @@ build() {
     -G Ninja \
     -W no-dev
   cmake --build build
-}
 
-check() {
-  cd "neovim"
-  ./build/bin/nvim --version
-  ./build/bin/nvim --headless -u NONE -i NONE +q
-}
-
-package() {
   install -Dm644 -t "$1/usr/share/libalpm/hooks/" nvimdoc.hook
   install -Dt "$1/usr/share/libalpm/scripts/" nvimdoc
 
