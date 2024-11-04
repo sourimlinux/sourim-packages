@@ -1,6 +1,6 @@
 name="base"
-version="1.2.0"
-revision="2"
+version="1.2.1"
+revision="1"
 depends="base-symlinks bash util-linux bzip2 xz tar coreutils file e2fsprogs dosfstools btrfs-progs sysvinit sysklogd curl spkg kmod libudev p11-kit findutils shadow inetutils iproute2 grep texinfo"
 provides=""
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
@@ -73,6 +73,7 @@ mount -t devpts none /dev/pts
 mount -t tmpfs none /dev/shm
 
 mount -a
+swapon -a
 
 mkdir -p /var/lock /var/log /var/run /var/tmp
 touch /var/run/utmp

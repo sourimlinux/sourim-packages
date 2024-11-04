@@ -1,7 +1,7 @@
 name="git"
 version="2.46.0"
-revision="1"
-depends="curl"
+revision="2"
+depends="curl expat"
 provides=""
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
