@@ -1,5 +1,6 @@
 name="readline"
 version="8.2"
+revision="2"
 depends="glibc ncurses"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
@@ -16,4 +17,5 @@ package() {
                 --docdir=/usr/share/doc/readline-$version
     make SHLIB_LIBS="-lncursesw"
     make SHLIB_LIBS="-lncursesw" install DESTDIR=$1
+    rm $1/usr/share/info/dir
 }

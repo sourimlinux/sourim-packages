@@ -1,5 +1,6 @@
 name="findutils"
 version="4.9.0"
+revision="2"
 depends="glibc"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
@@ -11,4 +12,5 @@ package() {
     ./configure --prefix=/usr --localstatedir=/var/lib/locate
     make
     make install DESTDIR=$1
+    rm $1/usr/share/info/dir
 }

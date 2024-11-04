@@ -1,0 +1,22 @@
+name="sysvinit"
+version="3.11"
+revision="5"
+depends="glibc"
+provides=""
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://github.com/slicer69/sysvinit/releases/download/$version/sysvinit-$version.tar.xz"
+)
+
+package() {
+    cd $name-$version
+    make &&
+    make install DESTDIR=$1 &&
+    mkdir -p $1/usr &&
+    mv $1/sbin/* $1/usr/bin &&
+    mv $1/bin/* $1/usr/bin &&
+    rmdir $1/{s,}bin
+
+    rm -vf $1/usr/{bin/,share/man/man{1,8}/}{wall,last,mesg,utmpdump,sulogin,logsave}{,.1,.8}
+    rm -vf $1/usr/share/man/man1/lastb.1
+}

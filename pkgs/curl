@@ -23,4 +23,7 @@ package() {
 
     mkdir -p $1/usr/share/doc/
     cp -v -R docs -T $1/usr/share/doc/curl-$version
+
+    mkdir -p $1/usr/lib
+    ln -s libunistring.so.5 $1/usr/lib/libunistring.so.2
 }

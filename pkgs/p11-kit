@@ -1,0 +1,52 @@
+name="p11-kit"
+version="0.25.5"
+revision="3"
+depends="glibc libffi libtasn1 make-ca ca-certificates curl findutils"
+provides="libp11-kit.so.0"
+maintainer="Sigma Semka <bhzrd0@gmail.com>"
+source=(
+    "https://github.com/p11-glue/p11-kit/releases/download/$version/p11-kit-$version.tar.xz"
+)
+
+package() {
+	cd $name-$version
+	sed '20,$ d' -i trust/trust-extract-compat &&
+	sed 's/\/bin\/sh/\/bin\/bash/g' -i trust/trust-extract-compat &&
+	mkdir -p $1/usr/bin $1/usr/libexec/p11-kit/
+
+	cat >> trust/trust-extract-compat << EOF
+# Copy existing anchor modifications to /etc/ssl/local
+/usr/libexec/make-ca/copy-trust-modifications
+# Update trust stores
+/usr/sbin/make-ca -r
+EOF
+
+	./configure --prefix=/usr &&
+	make &&
+	make install DESTDIR=$1 &&
+	#mkdir -p build &&
+	#cd build &&
+	#meson setup ..            \
+	#	--prefix=/usr       \
+	#	--buildtype=release \
+	#	-D trust_paths=/etc/pki/anchors &&
+	#ninja &&
+	#DESTDIR=$1 ninja install
+	#ln -sfv /usr/libexec/p11-kit/trust-extract-compat \
+    #    	$1/usr/bin/update-ca-certificates &&
+	ln -sfv ./pkcs11/p11-kit-trust.so $1/usr/lib/libnssckbi.so
+
+# INSTALL
+    cat > $1/INSTALL << EOF
+#!/bin/bash
+
+case \$1 in
+    post)
+		echo "Downloading certdata.txt..."
+        make-ca -g > /dev/null
+		echo "Updating certificates..."
+		update-ca-certificates > /dev/null
+        ;;
+esac
+EOF
+}

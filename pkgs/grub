@@ -1,5 +1,6 @@
 name="grub"
 version="2.12"
+revision="4"
 depends="glibc"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
@@ -13,7 +14,8 @@ package() {
     ./configure --prefix=/usr          \
                 --sysconfdir=/etc      \
                 --disable-efiemu       \
-                --disable-werror &&
+                --disable-werror     &&
     make &&
     make install DESTDIR=$1
+    rm $1/usr/share/info/dir
 }

@@ -1,6 +1,6 @@
 name="sinit"
-version="1.0"
-depends="bash"
+version="1.0.1-rc2"
+depends="bash coreutils"
 provides=""
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
@@ -10,6 +10,7 @@ source=(
 package() {
     cd $name
     mkdir -p $1/usr/bin/
+    ./build &&
     DESTDIR=$1 ./install
 
     mkdir -p $1/etc/sv/{0,1,2,3,4,5,exec}

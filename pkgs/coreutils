@@ -1,6 +1,7 @@
 name="coreutils"
 version="9.4"
-depends="glibc"
+revision="3"
+depends="glibc libcap acl openssl attr"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
     "http://mirror.checkdomain.de/gnu/coreutils/coreutils-$version.tar.xz"
@@ -20,6 +21,5 @@ package() {
 
     make install DESTDIR=$1
 
-    mkdir -p $1/usr/sbin
-    mv -v $1/usr/bin/chroot $1/usr/sbin
+    rm $1/usr/share/info/dir
 }

@@ -1,0 +1,24 @@
+name="ca-certificates"
+version="20240203"
+revision="1"
+depends="glibc bash coreutils findutils openssl"
+provides=""
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "git+https://salsa.debian.org/debian/ca-certificates"
+)
+
+package() {
+    cd $name
+    make &&
+    make install DESTDIR=$1
+
+    mv -v $1/usr/{s,}bin &&
+
+    sed 's/\/bin\/sh/\/bin\/bash/g' -i $1/usr/bin/update-ca-certificates
+
+    mkdir -p $1/etc
+    cd $1/usr/share/ca-certificates/
+    find * > $1/etc/ca-certificates.conf
+    cd -
+}

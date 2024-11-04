@@ -1,8 +1,8 @@
 name="libtasn1"
 version="4.19.0"
-revision="1"
+revision="2"
 depends="glibc"
-provides=""
+provides="libtasn1.so.6"
 maintainer="Nikita Belov <nikita2010belov@gmail.com>"
 source=(
     "https://ftp.gnu.org/gnu/libtasn1/libtasn1-$version.tar.gz"
@@ -14,4 +14,5 @@ package() {
 	make
 	make install DESTDIR=$1
 	make -C doc/reference install-data-local DESTDIR=$1
+	rm $1/usr/share/info/dir
 }

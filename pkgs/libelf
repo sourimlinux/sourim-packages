@@ -1,5 +1,6 @@
 name="libelf"
 version="0.191"
+revision="2"
 depends="glibc zstd zlib xz bzip2"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
@@ -13,6 +14,7 @@ package() {
         --enable-libdebuginfod=dummy
     make
     make -C libelf install DESTDIR=$1
+    mkdir -p $1/usr/lib/pkgconfig
     install -vm644 config/libelf.pc $1/usr/lib/pkgconfig
     rm $1/usr/lib/libelf.a
 }

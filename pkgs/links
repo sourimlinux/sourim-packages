@@ -1,0 +1,19 @@
+name="links"
+version="2.30"
+revision="1"
+depends="glibc libevent brotli zstd zlib bzip2 xz"
+provides=""
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "http://links.twibright.com/download/links-$version.tar.bz2"
+)
+
+package() {
+    cd $name-$version 
+    ./configure --prefix=/usr --mandir=/usr/share/man &&
+    make &&
+    make install DESTDIR=$1 &&
+    install -v -d -m755 $1/usr/share/doc/links-$version &&
+    install -v -m644 doc/links_cal/* KEYS BRAILLE_HOWTO \
+        $1/usr/share/doc/links-$version
+}

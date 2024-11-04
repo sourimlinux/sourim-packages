@@ -1,5 +1,6 @@
 name="glibc"
 version="2.40"
+revision="4"
 depends=""
 provides="libBrokenLocale.so.1 libm.so.6 libdl.so.2 libpthread.so.0 librt.so.1 libmemusage.so libc_malloc_debug.so.0 libc.so.6 libpcprofile.so libmvec.so.1 libthread_db.so.1 libanl.so.1 libresolv.so.2 libnss_dns.so.2 libnss_files.so.2 libnss_db.so.2 libnss_compat.so.2 libnss_hesiod.so.2 libnsl.so.1 ld-linux-x86-64.so.2"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
@@ -11,7 +12,7 @@ package() {
     cd $name-$version
     mkdir -v build
     cd       build &&
-    echo "rootsbindir=/usr/sbin" > configparms &&
+    echo "rootsbindir=/usr/bin" > configparms &&
     ../configure --prefix=/usr                               \
                     --disable-werror                         \
                     --enable-kernel=4.19                     \
@@ -24,10 +25,9 @@ package() {
     touch $1/etc/ld.so.conf &&
     make install DESTDIR="$1" &&
     sed '/RTLDLIST=/s@/usr@@g' -i $1/usr/bin/ldd
+    mv -v $1/usr/{s,}bin
 
-    cat > $1/etc/nsswitch.conf << "EOF"
-# Begin /etc/nsswitch.conf
-
+    cat > $1/etc/nsswitch.conf << EOF
 passwd: files
 group: files
 shadow: files
@@ -39,22 +39,18 @@ protocols: files
 services: files
 ethers: files
 rpc: files
-
-# End /etc/nsswitch.conf
 EOF
 
-    cat > $1/etc/ld.so.conf << "EOF"
-# Begin /etc/ld.so.conf
+    cat > $1/etc/ld.so.conf << EOF
 /usr/local/lib
 /opt/lib
-
 EOF
  
-    cat >> $1/etc/ld.so.conf << "EOF"
+    cat >> $1/etc/ld.so.conf << EOF
 # Add an include directory
 include /etc/ld.so.conf.d/*.conf
-
 EOF
 
     mkdir -pv $1/etc/ld.so.conf.d
+    rm $1/usr/share/info/dir
 }

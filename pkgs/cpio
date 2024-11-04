@@ -1,0 +1,18 @@
+name="cpio"
+version="2.15"
+revision="2"
+depends="glibc"
+provides=""
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://ftp.gnu.org/gnu/cpio/cpio-$version.tar.gz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr &&
+    make &&
+    make install DESTDIR=$1
+    rm $1/usr/share/info/dir
+    rm -rv $1/usr/{libexec,share/man/man8}/rmt*
+}

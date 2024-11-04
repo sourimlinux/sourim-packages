@@ -1,7 +1,7 @@
 name="fish"
 version="3.7.1"
 revision="1"
-depends="libstdc++ ncurses libgcc"
+depends="libstdc++ ncurses"
 provides=""
 maintainer="Nikita Belov <nikita2010belov@gmail.com>"
 source=(
@@ -10,8 +10,9 @@ source=(
 
 package() {
 	cd $name-$version
-	mkdir build; cd build
-	cmake ..
-	make
-	make install DESTDIR=$1
+	mkdir build; cd build &&
+	cmake .. &&
+	make &&
+	make install DESTDIR=$1 &&
+	mv -v $1/usr/local/* $1/usr/
 }

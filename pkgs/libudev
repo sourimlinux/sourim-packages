@@ -1,6 +1,6 @@
 name="libudev"
 version="256.5"
-revision="1"
+revision="7"
 depends="glibc util-linux acl libcap openssl"
 provides="libudev.so.1"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
@@ -51,6 +51,55 @@ package() {
     install -vm644 hwdb.d/*  ../hwdb.d/{*.hwdb,README} $1/usr/lib/udev/hwdb.d/    &&
     install -vm755 $udev_helpers                       $1/usr/lib/udev            &&
     install -vm644 ../network/99-default.link          $1/usr/lib/udev/network    &&
+    cat > $1/usr/bin/start_udev << EOF
+#!/bin/bash
+
+# - if /dev is not mounted - mount as a devtmpfs (CONFIG_DEVTMPFS=y)
+# - if /dev is mounted (e.g. due to handover from initramfs or
+#   CONFIG_DEVTMPFS_MOUNT=y), remount with specific options
+# - some video drivers require exec access in /dev, thus it's set here
+# - for completness, we add few sanity limits (2k non-empty files, 16k inodes)
+
+UDEVOPTS="exec,nosuid,noatime,mode=0755,nr_blocks=2048,nr_inodes=16384"
+if /bin/mountpoint -q /dev ; then
+	/bin/mount -n -o remount,\${UDEVOPTS} dev /dev
+else
+	/bin/mount -n -t devtmpfs -o \${UDEVOPTS} dev /dev
+fi
+
+# mount /run directory if not mounted
+if ! /bin/mountpoint -q /run ; then
+	/bin/mount -n -t tmpfs -o mode=0755,nosuid,nodev,exec tmpfs /run
+fi
+
+# copy devcies from /lib/udev/devices
+cp -ar /lib/udev/devices/* /dev
+
+# launch udev daemon, make sure it's not running first
+test -z "\$(/bin/pidof -s udevd)" && /sbin/udevd --daemon
+
+# coldplug devices and wait for the queue to be processed
+/sbin/udevadm trigger --type=subsystems --action=add
+/sbin/udevadm trigger --type=devices --action=add
+/sbin/udevadm settle
+EOF
+    chmod +x $1/usr/bin/start_udev
+
+    mkdir -p $1/etc/sv/exec/
+    cat > $1/etc/sv/exec/udevd << EOF
+#!/bin/bash
+
+case \$1 in
+    start)
+        udevadm control --exit
+        start_udev
+        ;;
+    stop)
+        udevadm control --exit
+        ;;
+esac
+EOF
+    chmod +x $1/etc/sv/exec/udevd
 
     unset udev_helpers
 }

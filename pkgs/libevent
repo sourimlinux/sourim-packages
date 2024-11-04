@@ -1,0 +1,17 @@
+name="libevent"
+version="2.1.12"
+revision="1"
+depends="glibc openssl"
+provides=""
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://github.com/libevent/libevent/releases/download/release-$version-stable/libevent-$version-stable.tar.gz"
+)
+
+package() {
+    cd libevent-$version-stable
+    sed -i 's/python/&3/' event_rpcgen.py &&
+    ./configure --prefix=/usr --disable-static &&
+    make &&
+    make install DESTDIR=$1
+}

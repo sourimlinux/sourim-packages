@@ -1,0 +1,16 @@
+name="efibootmgr"
+version="18"
+revision="1"
+depends="glibc popt efivar"
+provides=""
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://github.com/rhboot/efibootmgr/archive/$version/efibootmgr-$version.tar.gz"
+)
+
+package() {
+    cd $name-$version
+
+    make EFIDIR=EFI EFI_LOADER=grubx64.efi CFLAGS="$CFLAGS -I/usr/include/efivar" &&
+    make install DESTDIR=$1 EFIDIR=EFI
+}

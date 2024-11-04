@@ -1,0 +1,21 @@
+name="popt"
+version="1.19"
+revision="1"
+depends="glibc"
+provides="libpopt.so.0"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "http://ftp.rpm.org/popt/releases/popt-1.x/popt-$version.tar.gz"
+)
+
+package() {
+    cd $name-$version
+
+    ./configure --prefix=/usr --disable-static &&
+    make &&
+    sed -i 's@\./@src/@' Doxyfile &&
+    doxygen &&
+    make install DESTDIR=$1 &&
+    install -v -m755 -d $1/usr/share/doc/popt-$version &&
+    install -v -m644 doxygen/html/* $1/usr/share/doc/popt-$version
+}

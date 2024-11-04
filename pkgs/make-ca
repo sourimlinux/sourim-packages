@@ -1,0 +1,16 @@
+name="make-ca"
+version="1.14"
+revision="1"
+depends="glibc sed openssl"
+provides=""
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://github.com/lfs-book/make-ca/archive/v$version/make-ca-$version.tar.gz"
+)
+
+package() {
+    cd $name-$version
+    make install DESTDIR=$1 &&
+    install -vdm755 $1/etc/ssl/local
+    mv -v $1/usr/{s,}bin
+}

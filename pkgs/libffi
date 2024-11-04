@@ -1,14 +1,19 @@
 name="libffi"
-version="3.2.1"
+version="3.4.5"
+revision="2"
 depends="glibc"
+provides="libffi.so.8"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
-    "https://sourceware.org/ftp/libffi/libffi-$version.tar.gz"
+    "https://github.com/libffi/libffi/releases/download/v$version/libffi-$version.tar.gz"
 )
 
 package() {
     cd $name-$version
-    ./configure --prefix=/usr --disable-static  
-    make
-    make install DESTDIR=$1
+    ./configure --prefix=/usr --disable-static &&
+    make &&
+    make install DESTDIR=$1 &&
+    mkdir -p $1/usr/lib
+    mv -v $1/usr/lib64/* $1/usr/lib
+    rm $1/usr/share/info/dir
 }

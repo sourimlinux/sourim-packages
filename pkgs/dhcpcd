@@ -1,5 +1,6 @@
 name="dhcpcd"
 version="10.0.6"
+revision="2"
 depends="glibc openssl libudev"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
@@ -9,25 +10,28 @@ source=(
 package() {
 	cd $name-$version
 	./configure --prefix=/usr                \
-            --sysconfdir=/etc            \
-            --libexecdir=/usr/lib/dhcpcd \
-            --dbdir=/var/lib/dhcpcd      \
-            --runstatedir=/run           \
-            --disable-privsep         &&
+                --sysconfdir=/etc            \
+                --libexecdir=/usr/lib/dhcpcd \
+                --dbdir=/var/lib/dhcpcd      \
+                --runstatedir=/run           \
+                --disable-privsep         &&
 	make &&
 	make install DESTDIR=$1
+    mkdir -p $1/{run,etc/dhcpcd,etc/sv/exec/}
+    echo "eth0" > $1/etc/dhcpcd/interface
 
-    mkdir -p $1/etc/sv/exec/dhcpcd
-    cat > $1/etc/sv/exec/dhcpcd/start << EOF
+    cat > $1/etc/sv/exec/dhcpcd << EOF
 #!/bin/bash
 
-INTERFACE="eth0"
-dhcpcd $INTERFACE
+INTERFACE="\`cat /etc/dhcpcd/interface\`"
+case \$1 in
+    start)
+        dhcpcd \$INTERFACE
+        ;;
+    stop)
+        dhcpcd -x \$INTERFACE
+        ;;
+esac
 EOF
-    cat > $1/etc/sv/exec/dhcpcd/stop << EOF
-#!/bin/bash
-
-INTERFACE="eth0"
-dhcpcd -x $INTERFACE
-EOF
+    chmod +x $1/etc/sv/exec/dhcpcd
 }

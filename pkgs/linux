@@ -1,0 +1,20 @@
+name="linux"
+version="6.11.6"
+revision="7"
+depends=""
+provides=""
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-$version.tar.xz"
+)
+
+package() {
+    cd $name-$version
+    curl "https://ftp.spline.inf.fu-berlin.de/pub/crux/loop/crux/kernel/linux-5.15.55.config" --output .config &&
+    mkdir -p $1/boot
+
+    make &&
+    make install INSTALL_PATH=$1/boot &&
+    make modules &&
+    make modules_install INSTALL_MOD_PATH=$1/
+}

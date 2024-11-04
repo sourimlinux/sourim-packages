@@ -35,14 +35,16 @@ package() {
     make install DESTDIR=$1
 
     # libgcc package
-    mkdir -pv $1/../libgcc/usr/lib64/gcc $1/../libgcc/usr/lib/gcc/${_triplet}/${version}
-    mv -v $1/usr/lib64/libgcc_s.so* $1/../libgcc/usr/lib64
+    mkdir -pv $1/../libgcc/usr/lib/gcc $1/../libgcc/usr/lib/gcc/${_triplet}/${version}
+    mv -v $1/usr/lib64/libgcc_s.so* $1/../libgcc/usr/lib
     mv -v $1/usr/lib/gcc/${_triplet}/${version}/*.o $1/../libgcc/usr/lib/gcc/${_triplet}/${version}
     mv -v $1/usr/lib/gcc/${_triplet}/${version}/*.a $1/../libgcc/usr/lib/gcc/${_triplet}/${version}
 
     # libstdc++ package
-    mkdir -pv $1/../libstdc++/usr/{include,lib64}
-    mv -v $1/usr/lib64/libstdc++* $1/../libstdc++/usr/lib64
-    mv -v $1/usr/lib64/libsupc++* $1/../libstdc++/usr/lib64
+    mkdir -pv $1/../libstdc++/usr/{include,lib}
+    mv -v $1/usr/lib64/libstdc++* $1/../libstdc++/usr/lib
+    mv -v $1/usr/lib64/libsupc++* $1/../libstdc++/usr/lib
     mv -v $1/usr/include/c++ $1/../libstdc++/usr/include
+
+    rm $1/usr/share/info/dir
 }

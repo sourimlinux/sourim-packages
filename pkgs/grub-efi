@@ -1,0 +1,27 @@
+name="grub-efi"
+version="2.12"
+revision="2"
+depends="grub efibootmgr freetype"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://ftp.gnu.org/gnu/grub/grub-$version.tar.xz"
+)
+
+package() {
+    cd grub-$version
+
+    echo depends bli part_gpt > grub-core/extra_deps.lst &&
+    ./configure --prefix=/usr        \
+                --sysconfdir=/etc    \
+                --disable-efiemu     \
+                --enable-grub-mkfont \
+                --with-platform=efi  \
+                --target=x86_64      \
+                --disable-werror     &&
+    make &&
+    make DESTDIR=$PWD/dest install
+    mkdir -p $1/usr/bin $1/usr/share/grub $1/usr/lib/grub
+    cp -av dest/usr/lib/grub/x86_64-efi -T $1/usr/lib/grub/x86_64-efi
+    cp -av dest/usr/share/grub/*.{pf2,h}   $1/usr/share/grub
+    cp -av dest/usr/bin/grub-mkfont        $1/usr/bin
+}

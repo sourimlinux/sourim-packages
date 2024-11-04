@@ -1,6 +1,7 @@
 name="sed"
 version="4.9"
-depends="glibc"
+revision="2"
+depends="glibc acl"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
     "http://mirror.checkdomain.de/gnu/sed/sed-$version.tar.xz"
@@ -11,4 +12,5 @@ package() {
     ./configure --prefix=/usr
     make
     make install DESTDIR=$1
+    rm $1/usr/share/info/dir
 }

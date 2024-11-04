@@ -10,4 +10,15 @@ source=(
 
 package() {
     cd $name-$version
+
+    # INSTALL
+    cat > $1/INSTALL << EOF
+#!/bin/bash
+
+case \$1 in
+    post)
+        # POST INSTALL
+        ;;
+esac
+EOF
 }

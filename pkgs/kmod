@@ -1,6 +1,6 @@
 name="kmod"
-version="31"
-depends="glibc"
+version="33"
+depends="glibc xz zstd zlib openssl"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
     "https://www.kernel.org/pub/linux/utils/kernel/kmod/kmod-$version.tar.xz"

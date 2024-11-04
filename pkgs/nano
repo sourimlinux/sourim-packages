@@ -1,5 +1,6 @@
 name="nano"
 version="7.2"
+revision="2"
 depends="glibc zlib ncurses"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
@@ -14,4 +15,5 @@ package() {
                 --docdir=/usr/share/doc/nano-7.2
     make
     make install DESTDIR=$1
+    rm $1/usr/share/info/dir
 }

@@ -1,5 +1,6 @@
 name="libidn2"
 version="2.3.7"
+revision="2"
 depends="glibc libunistring"
 provides="libidn2.so.0"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
@@ -12,4 +13,5 @@ package() {
     ./configure --prefix=/usr --disable-static &&
     make &&
     make install DESTDIR=$1
+    rm $1/usr/share/info/dir
 }

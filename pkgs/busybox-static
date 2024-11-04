@@ -1,0 +1,14 @@
+name="busybox-static"
+version="1.35.0"
+revision="1"
+depends=""
+provides=""
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://www.busybox.net/downloads/binaries/$version-x86_64-linux-musl/busybox"
+)
+
+package() {
+    mkdir -p $1/usr/bin
+    install -m 755 busybox $1/usr/bin
+}

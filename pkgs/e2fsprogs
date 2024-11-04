@@ -1,5 +1,6 @@
 name="e2fsprogs"
 version="1.47.0"
+revision="2"
 depends="glibc"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
@@ -21,6 +22,5 @@ package() {
 
     mkdir -p $1/usr/share/info
     gunzip -v $1/usr/share/info/libext2fs.info.gz
-    install-info --dir-file=$1/usr/share/info/dir $1/usr/share/info/libext2fs.info
     sed 's/metadata_csum_seed,//' -i $1/etc/mke2fs.conf
 }

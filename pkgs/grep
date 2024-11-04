@@ -1,6 +1,7 @@
 name="grep"
 version="3.11"
-depends="glibc"
+revision="2"
+depends="glibc pcre2"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
     "http://mirror.checkdomain.de/gnu/grep/grep-$version.tar.xz"
@@ -11,4 +12,5 @@ package() {
     ./configure --prefix=/usr
     make
     make install DESTDIR=$1
+    rm $1/usr/share/info/dir
 }

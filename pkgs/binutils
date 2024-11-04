@@ -1,5 +1,6 @@
 name="binutils"
 version="2.43.1"
+revision="2"
 depends="glibc zstd zlib"
 provides="libsframe.so.1 libbfd-2.43.1.so libctf.so.0 libctf-nobfd.so.0 libopcodes-2.43.1.so libgprofng.so.0"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
@@ -19,4 +20,5 @@ package() {
                 --with-system-zlib &&
     make &&
     make install DESTDIR="$1"
+    rm $1/usr/share/info/dir
 }

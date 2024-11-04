@@ -1,0 +1,16 @@
+name="dracut"
+version="059"
+revision="1"
+depends="glibc zstd zlib xz kmod"
+provides=""
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://github.com/dracutdevs/dracut/archive/refs/tags/$version.tar.gz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr &&
+    make &&
+    make install DESTDIR=$1
+}

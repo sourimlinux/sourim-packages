@@ -1,6 +1,7 @@
 name="base"
-version="1.0"
-depends="bash util-linux bzip2 xz tar coreutils file e2fsprogs sinit findutils"
+version="1.2.0"
+revision="2"
+depends="base-symlinks bash util-linux bzip2 xz tar coreutils file e2fsprogs dosfstools btrfs-progs sysvinit sysklogd curl spkg kmod libudev p11-kit findutils shadow inetutils iproute2 grep texinfo"
 provides=""
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
@@ -8,63 +9,217 @@ source=(
 )
 
 package() {
-    mkdir -p $1/usr/{bin,lib} $1/etc/sv/{0,1,2,3,4,5,exec} $1/{dev,tmp,proc,sys}
-#    ln -s /usr/bin $1/usr/sbin
-#    ln -s /usr/lib $1/usr/lib32
-#    ln -s /usr/lib $1/usr/lib64
-    ln -s /usr/lib $1/lib32
-    ln -s /usr/lib $1/lib64
-    ln -s /usr/bin $1/bin
-    ln -s /usr/bin $1/sbin
+    mkdir -p $1/usr/{bin,lib} $1/etc/sv/exec $1/etc/rc.d/ $1/{dev,tmp,proc,sys,mnt,run} $1/root
 
+    cat > $1/root/.bashrc.tmp << EOF
+# .bashrc
+
+# If not running interactively, don't do anything
+[[ \$- != *i* ]] && return
+
+alias ls='ls --color=auto'
+alias grep='grep --color=auto'
+PS1='[\u@\h \W]\$ '
+EOF
+    cat > $1/root/.bash_profile.tmp << EOF
+# .bash_profile
+
+# Get the aliases and functions
+[ -f \$HOME/.bashrc ] && . \$HOME/.bashrc
+EOF
+
+    cat > $1/etc/inittab << EOF
+id:3:initdefault:
+
+rc::sysinit:/etc/sv/rc
+rs:S1:wait:/etc/sv/rc.single
+rd:06:wait:/etc/sv/rc.shutdown
+
+ca:12345:ctrlaltdel:/sbin/shutdown -t1 -a -r now
+
+su:S06:once:/sbin/sulogin -p
+s1:1:respawn:/sbin/sulogin -p
+
+r1:2345:wait:/etc/sv/rc.service
+1:2345:respawn:/sbin/agetty -a root --noclear tty1 9600 linux
+2:2345:respawn:/sbin/agetty tty2 9600 linux
+3:2345:respawn:/sbin/agetty tty3 9600 linux
+4:2345:respawn:/sbin/agetty tty4 9600 linux
+5:2345:respawn:/sbin/agetty tty5 9600 linux
+6:2345:respawn:/sbin/agetty tty6 9600 linux
+EOF
+    cat > $1/etc/sv/rc << EOF
+#!/bin/bash
+
+clear
+echo "Welcome to SourimLinux!"
+
+hostname \`cat /etc/hostname\`
+
+mount -t devtmpfs none /dev
+mount -t proc none /proc
+mount -t sysfs none /sys
+mount -t tmpfs none /tmp
+mount -t tmpfs none /run
+
+ln -s /proc/self/fd/0 /dev/stdin
+ln -s /proc/self/fd/1 /dev/stdout
+ln -s /proc/self/fd/2 /dev/stderr
+
+ln -s /proc/self/fd /dev/fd
+
+mkdir -p /dev/pts /dev/shm
+mount -t devpts none /dev/pts
+mount -t tmpfs none /dev/shm
+
+mount -a
+
+mkdir -p /var/lock /var/log /var/run /var/tmp
+touch /var/run/utmp
+chmod 777 /tmp
+
+mkdir -p /run/cryptsetup
+syslogd
+
+if [ -d /sys/firmware/efi/efivars ]; then
+	/bin/mount /sys/firmware/efi/efivars &> /dev/null
+fi
+EOF
+    chmod +x $1/etc/sv/rc
+
+    cat > $1/etc/sv/rc.service << EOF
+#!/bin/bash
+
+for sv in \`ls /etc/rc.d/\`; do
+    sysctl start \$(basename \$(readlink /etc/rc.d/\$sv))
+done
+EOF
+    chmod +x $1/etc/sv/rc.service
+
+    cat > $1/etc/sv/rc.single << EOF
+#!/bin/bash
+
+# Terminate all processes
+for sv in \`ls /etc/rc.d/ | tac\`; do
+    sysctl stop \$(basename \$(readlink /etc/rc.d/\$sv)) 5
+done
+
+/sbin/killall5 -15
+/bin/sleep 5
+/sbin/killall5 -9
+
+# Enter single-user mode
+exec /sbin/init -t1 S
+EOF
+    chmod +x $1/etc/sv/rc.single
+
+    cat > $1/etc/sv/rc.shutdown << EOF
+#!/bin/bash
+
+# Set linefeed mode to avoid staircase effect
+/bin/stty onlcr
+
+echo "Goodbye!"
+
+# Terminate all processes
+for sv in \`ls /etc/rc.d/ | tac\`; do
+    sysctl stop \$(basename \$(readlink /etc/rc.d/\$sv)) 5
+done
+
+/sbin/killall5 -15
+/bin/sleep 5
+/sbin/killall5 -9
+
+# Umount file systems
+/bin/umount -n -a &> /dev/null
+
+# Halt or reboot
+if [[ \$RUNLEVEL == 0 ]]; then
+    /sbin/poweroff -d -f -i
+else
+    /sbin/reboot -d -f -i
+fi
+EOF
+    chmod +x $1/etc/sv/rc.shutdown
+
+    cat > $1/usr/bin/setup-network << EOF
+#!/bin/bash
+
+ip link
+
+echo
+read -p "What your main network interface?: " net
+read -p "Enable DHCP?(Y/n): " dhcp
+
+echo "\$net" > /etc/net_interface || exit 1
+ip link set \$net up
+
+if [[ \$dhcp == "Y" || \$dhcp == "y" || -z \$dhcp ]]; then
+    echo "Stopping dhcpcd..."
+    sysctl stop dhcpcd
+
+    echo "\$net" > /etc/dhcpcd/interface || exit 1
+
+    echo "Creating symlink dhcpcd..."
+    ln -s /etc/sv/exec/dhcpcd /etc/rc.d/10-dhcpcd || exit 1
+    
+    echo "Starting dhcpcd..."
+    sysctl start dhcpcd || exit 1
+fi
+
+echo
+echo "Successfully!"
+EOF
+    chmod +x $1/usr/bin/setup-network
+
+    cat > $1/usr/bin/sysctl << EOF
+#!/bin/bash
+
+TIMEOUT="60"
+[[ ! -z \$3 ]] && TIMEOUT="\$3"
+
+failed() {
+	echo "\$1: failed"
+	exit 1
+}
+
+service_ctl() {
+	chmod +x /etc/sv/exec/\$2 || failed \$2
+	timeout -k \${TIMEOUT}s \${TIMEOUT}s /etc/sv/exec/\$2 \$1 || echo "\$1: \$2: timeout down" && echo "\$1: \$2: ok"
+}
+
+case "\$1" in
+start)
+	service_ctl start \$2
+	;;
+stop)
+	service_ctl stop \$2
+	;;
+restart)
+	service_ctl stop \$2 || failed \$2
+	service_ctl start \$2 || failed \$2
+	;;
+
+*)
+	echo "usage: sysctl COMMAND OPTIONS"
+	echo "  start    <NAME>          Start service"
+	echo "  stop     <NAME>          Stop service"
+	echo "  restart  <NAME>          Restart service"
+	;;
+esac
+EOF
+    chmod +x $1/usr/bin/sysctl
+
+# TEMP CONFIGS
     cat > $1/etc/os-release << EOF
 NAME="Sourim"
 PRETTY_NAME="Sourim Linux"
 EOF
-
-### SPKG SERVICES: mountfs
-    mkdir -p $1/etc/sv/exec/mountfs/
-    cat > $1/etc/sv/exec/mountfs/start << EOF
-#!/bin/bash
-
-mkdir -p /{dev,tmp,sys,proc}
-mount -t devtmpfs none /dev
-mount -t tmpfs none /tmp
-mount -t sysfs none /sys
-mount -t proc none /proc
-
-chmod 0777 /tmp
+    cat > $1/etc/resolv.conf.tmp << EOF
+nameserver 1.1.1.1
 EOF
-    cat > $1/etc/sv/exec/mountfs/stop << EOF
-#!/bin/bash
-
-for fs in dev tmp sys proc; do
-    umount /\$fs
-done
-EOF
-### SPKG SERVICES: net_interface
-    mkdir -p $1/etc/sv/exec/net_interface
-    cat > $1/etc/sv/exec/net_interface/start << EOF
-#!/bin/bash
-
-for inter in \`cat /etc/net_interface\`; do
-    ip link set \$inter up
-done
-EOF
-    cat > $1/etc/sv/exec/net_interface/stop << EOF
-#!/bin/bash
-
-for inter in \`cat /etc/net_interface\`; do
-    ip link set \$inter down
-done
-EOF
-
-    ln -s /etc/sv/exec/mountfs $1/etc/sv/0/00-mountfs
-    ln -s /etc/sv/exec/net_interface $1/etc/sv/0/10-net_interface
-
-
-# /etc/protocols
-    cat > $1/etc/protocols << EOF
+    # /etc/protocols
+    cat > $1/etc/protocols.tmp << EOF
 hopopt         0 HOPOPT
 icmp           1 ICMP
 igmp           2 IGMP
@@ -203,7 +358,98 @@ nsh          145 NSH
 reserved     255 Reserved
 EOF
 # /etc/net_interface
-    cat > $1/etc/net_interface << EOF
+    echo "" > $1/etc/net_interface.tmp
 
+    cat > $1/etc/hosts.tmp << EOF
+127.0.0.1  localhost sourimlinux
+::1        localhost
+EOF
+    cat > $1/etc/passwd.tmp << "EOF"
+root:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/dev/null:/usr/bin/false
+daemon:x:6:6:Daemon User:/dev/null:/usr/bin/false
+messagebus:x:18:18:D-Bus Message Daemon User:/run/dbus:/usr/bin/false
+uuidd:x:80:80:UUID Generation Daemon User:/dev/null:/usr/bin/false
+nobody:x:65534:65534:Unprivileged User:/dev/null:/usr/bin/false
+EOF
+    cat > $1/etc/group.tmp << "EOF"
+root:x:0:
+bin:x:1:daemon
+sys:x:2:
+kmem:x:3:
+tape:x:4:
+tty:x:5:
+daemon:x:6:
+floppy:x:7:
+disk:x:8:
+lp:x:9:
+dialout:x:10:
+audio:x:11:
+video:x:12:
+utmp:x:13:
+cdrom:x:15:
+adm:x:16:
+messagebus:x:18:
+input:x:24:
+mail:x:34:
+kvm:x:61:
+uuidd:x:80:
+wheel:x:97:
+users:x:999:
+nogroup:x:65534:
+EOF
+    cat > $1/etc/hostname.tmp << EOF
+sourimlinux
+EOF
+    cat > $1/usr/bin/update-info-dir << EOF
+#!/bin/bash
+
+echo "Updating info dir..."
+mkdir -p /usr/share/info
+echo -n > /usr/share/info/dir
+for info in \`ls /usr/share/info\`; do
+    [[ \$info == *".info" ]] && install-info /usr/share/info/\$info /usr/share/info/dir || continue
+done
+EOF
+    chmod +x $1/usr/bin/update-info-dir
+
+    cat > $1/etc/sv/exec/net_interface << EOF
+#!/bin/bash
+
+case \$1 in
+    start)
+        for inter in \`cat /etc/net_interface\`; do
+            ip link set \$inter up
+        done
+        ;;
+    stop)
+        for inter in \`cat /etc/net_interface\`; do
+            ip link set \$inter down
+        done
+        ;;
+esac
+EOF
+    chmod +x $1/etc/sv/exec/net_interface
+
+    ln -s /etc/sv/exec/udevd $1/etc/rc.d/00-udevd
+    ln -s /etc/sv/exec/net_interface $1/etc/rc.d/01-net_interface
+
+    # INSTALL
+    cat > $1/INSTALL << EOF
+#!/bin/bash
+
+case \$1 in
+    post)
+        for file in .bashrc .bash_profile; do
+            [[ ! -f /root/\$file ]] && cp /root/\$file.tmp /root/\$file
+            rm /root/\$file.tmp
+        done
+        for file in hostname group passwd hosts net_interface protocols resolv.conf; do
+            [[ ! -f /etc/\$file ]] && cp /etc/\$file.tmp /etc/\$file
+            rm /etc/\$file.tmp
+        done
+        update-info-dir
+        ;;
+esac
 EOF
 }

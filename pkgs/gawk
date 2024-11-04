@@ -1,6 +1,7 @@
 name="gawk"
 version="5.3.0"
-depends="glibc"
+revision="2"
+depends="glibc mpfr gmp"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
     "http://mirror.checkdomain.de/gnu/gawk/gawk-5.3.0.tar.xz"
@@ -11,7 +12,8 @@ package() {
     sed -i 's/extras//' Makefile.in
     ./configure --prefix=/usr
     make
-    rm -f $1/usr/bin/gawk-5.3.0
+    rm -f $1/usr/bin/gawk-$version
     make install DESTDIR=$1
     ln -sv gawk.1 $1/usr/share/man/man1/awk.1
+    rm $1/usr/share/info/dir
 }

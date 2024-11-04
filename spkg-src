@@ -61,6 +61,7 @@ buildpkg() {
     [[ ! -f pkgs/$1 ]]           && show_err "'$1' package not found"
     
     cd output || exit 1
+        revision="1"
         . ../pkgs/$1 || exit 1
 
         [[ -z "$revision" ]] && revision="1"

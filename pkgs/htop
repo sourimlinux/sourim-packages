@@ -1,0 +1,16 @@
+name="htop"
+version="3.3.0"
+revision="1"
+depends="glibc libcap ncurses"
+provides=""
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://github.com/htop-dev/htop/releases/download/$version/htop-$version.tar.xz"
+)
+
+package() {
+    cd $name-$version
+    ./configure --prefix=/usr &&
+    make &&
+    make install DESTDIR=$1
+}

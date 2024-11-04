@@ -26,4 +26,8 @@ package() {
                 --docdir=/usr/share/doc/util-linux-$version
     make
     make install DESTDIR=$1
+
+    mkdir -p $1/usr/bin
+    mv -v $1/usr/sbin/* $1/usr/bin
+    rmdir $1/usr/sbin
 }

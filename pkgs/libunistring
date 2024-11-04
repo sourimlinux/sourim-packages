@@ -1,5 +1,6 @@
 name="libunistring"
 version="1.3"
+revision="2"
 depends="glibc"
 provides="libunistring.so.5"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
@@ -14,4 +15,5 @@ package() {
                 --docdir=/usr/share/doc/libunistring-$version &&
     make &&
     make install DESTDIR=$1
+    rm $1/usr/share/info/dir
 }

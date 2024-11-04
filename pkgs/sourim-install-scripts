@@ -1,0 +1,15 @@
+name="sourim-install-scripts"
+version="1.1"
+revision="1"
+depends="glibc bash coreutils e2fsprogs grub cpio gzip busybox-static findutils"
+provides=""
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "git+https://github.com/sourimlinux/sourim-install-scripts"
+)
+
+package() {
+    cd $name
+
+    DESTDIR=$1 ./install
+}

@@ -1,7 +1,7 @@
 name="spkg"
-version="1.0"
+version="1.1.7"
 revision="1"
-depends="bash coreutils tar xz util-linux"
+depends="bash coreutils tar xz util-linux libstdc++ gawk grep curl"
 provides=""
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
@@ -12,4 +12,17 @@ package() {
     cd spkg
 
     DESTDIR=$1 ./install
+    mv $1/etc/spkg.conf $1/etc/spkg.conf.tmp
+
+    # INSTALL
+    cat > $1/INSTALL << EOF
+#!/bin/bash
+
+case \$1 in
+    post)
+        [[ ! -f /etc/spkg.conf ]] && cp /etc/spkg.conf{.tmp,}
+        rm /etc/spkg.conf.tmp
+        ;;
+esac
+EOF
 }

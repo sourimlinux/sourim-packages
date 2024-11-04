@@ -1,5 +1,6 @@
 name="bash"
 version="5.2.21"
+revision="2"
 depends="glibc readline ncurses"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
@@ -16,4 +17,5 @@ package() {
 
     make
     make install DESTDIR=$1
+    rm $1/usr/share/info/dir
 }

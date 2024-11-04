@@ -1,0 +1,16 @@
+name="efivar"
+version="39"
+revision="1"
+depends="glibc"
+provides="libefivar.so.1 libefiboot.so.1 libefisec.so.1"
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://github.com/rhboot/efivar/archive/$version/efivar-$version.tar.gz"
+)
+
+package() {
+    cd $name-$version
+
+    make &&
+    make install LIBDIR=/usr/lib DESTDIR=$1
+}
