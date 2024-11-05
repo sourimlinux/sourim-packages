@@ -1,5 +1,6 @@
 name="dejagnu"
 version="1.6.3"
+revision="2"
 depends="glibc expect tcl"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
@@ -15,6 +16,7 @@ package() {
     makeinfo --plaintext       -o doc/dejagnu.txt  ../doc/dejagnu.texi
     make install DESTDIR=$1
     mkdir -p $1/usr/share/doc/
-    install -v -dm755  $1/usr/share/doc/dejagnu-1.6.3
-    install -v -m644   doc/dejagnu.{html,txt} $1/usr/share/doc/dejagnu-1.6.3
+    install -v -dm755  $1/usr/share/doc/dejagnu-$version
+    install -v -m644   doc/dejagnu.{html,txt} $1/usr/share/doc/dejagnu-$version
+    rm -f $1/usr/share/info/dir
 }

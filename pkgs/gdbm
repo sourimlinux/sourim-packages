@@ -1,5 +1,6 @@
 name="gdbm"
 version="1.23"
+revision="2"
 depends="glibc"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
@@ -13,4 +14,5 @@ package() {
         --enable-libgdbm-compat
     make
     make install DESTDIR=$1
+    rm $1/usr/share/info/dir
 }

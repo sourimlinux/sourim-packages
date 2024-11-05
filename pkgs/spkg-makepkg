@@ -1,5 +1,5 @@
 name="spkg-makepkg"
-version="1.0.1"
+version="1.0.2"
 revision="1"
 depends="bash coreutils tar xz util-linux unzip git wget findutils fakeroot"
 provides=""

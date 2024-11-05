@@ -1,5 +1,6 @@
 name="gettext"
 version="0.22.4"
+revision="2"
 depends="glibc"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
@@ -13,4 +14,5 @@ package() {
             --docdir=/usr/share/doc/gettext-$version &&
     make &&
     make install DESTDIR=$1
+    rm -f $1/usr/share/info/dir
 }

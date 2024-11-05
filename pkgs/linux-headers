@@ -1,0 +1,19 @@
+name="linux-headers"
+version="6.11.6"
+revision="1"
+depends="linux"
+provides=""
+maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
+source=(
+    "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-$version.tar.xz"
+)
+
+package() {
+    cd linux-$version
+    curl "https://ftp.spline.inf.fu-berlin.de/pub/crux/loop/crux/kernel/linux-5.15.55.config" --output .config &&
+    mkdir -p $1/usr &&
+    make mrproper &&
+    make headers &&
+    find usr/include -type f ! -name '*.h' -delete &&
+    cp -rv usr/include $1/usr
+}

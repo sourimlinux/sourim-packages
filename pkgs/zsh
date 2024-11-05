@@ -1,6 +1,6 @@
 name="zsh"
 version="5.9"
-revision="1"
+revision="2"
 depends="glibc gdbm ncurses libcap"
 provides=""
 maintainer="Sigma Semka <bhzrd0@gmail.com>"
@@ -26,18 +26,19 @@ package() {
     		-i Doc/*.*
 
 	./configure --prefix=/usr            \
-            --sysconfdir=/etc/zsh    \
-            --enable-etcdir=/etc/zsh \
-            --enable-cap             \
-            --enable-gdbm                      &&
-make                                           &&
+				--sysconfdir=/etc/zsh    \
+				--enable-etcdir=/etc/zsh \
+				--enable-cap             \
+				--enable-gdbm                      &&
+	make                                           &&
 
-makeinfo  Doc/zsh.texi --html      -o Doc/html &&
-makeinfo  Doc/zsh.texi --plaintext -o zsh.txt  &&
-makeinfo  Doc/zsh.texi --html --no-split --no-headers -o zsh.html
+	makeinfo  Doc/zsh.texi --html      -o Doc/html &&
+	makeinfo  Doc/zsh.texi --plaintext -o zsh.txt  &&
+	makeinfo  Doc/zsh.texi --html --no-split --no-headers -o zsh.html
 
-make install DESTDIR=$1                                                   &&
-make infodir=$1/usr/share/info install.info                       &&
-make htmldir=$1/usr/share/doc/zsh-5.9/html install.html           &&
-install -v -m644 zsh.{html,txt} Etc/FAQ $1/usr/share/doc/zsh-5.9
+	make install DESTDIR=$1                                                   &&
+	make infodir=$1/usr/share/info install.info                       &&
+	make htmldir=$1/usr/share/doc/zsh-$version/html install.html           &&
+	install -v -m644 zsh.{html,txt} Etc/FAQ $1/usr/share/doc/zsh-$version
+	rm -f $1/usr/share/info/dir
 }

@@ -1,17 +1,18 @@
 name="base"
 version="1.2.1"
-revision="1"
+revision="3"
 depends="base-symlinks bash util-linux bzip2 xz tar coreutils file e2fsprogs dosfstools btrfs-progs sysvinit sysklogd curl spkg kmod libudev p11-kit findutils shadow inetutils iproute2 grep texinfo"
 provides=""
+confs="root/.bash_profile root/.bashrc etc/inittab etc/os-release etc/protocols etc/net_interface etc/hosts etc/passwd etc/group etc/hostname"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
 
 )
 
 package() {
-    mkdir -p $1/usr/{bin,lib} $1/etc/sv/exec $1/etc/rc.d/ $1/{dev,tmp,proc,sys,mnt,run} $1/root
+    mkdir -p $1/usr/{bin,lib} $1/etc/sv/exec $1/etc/rc.d/ $1/{dev,tmp,proc,sys,mnt,run} $1/{root,home}
 
-    cat > $1/root/.bashrc.tmp << EOF
+    cat > $1/root/.bashrc << EOF
 # .bashrc
 
 # If not running interactively, don't do anything
@@ -21,7 +22,7 @@ alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 PS1='[\u@\h \W]\$ '
 EOF
-    cat > $1/root/.bash_profile.tmp << EOF
+    cat > $1/root/.bash_profile << EOF
 # .bash_profile
 
 # Get the aliases and functions
@@ -216,11 +217,11 @@ EOF
 NAME="Sourim"
 PRETTY_NAME="Sourim Linux"
 EOF
-    cat > $1/etc/resolv.conf.tmp << EOF
+    cat > $1/etc/resolv.conf << EOF
 nameserver 1.1.1.1
 EOF
     # /etc/protocols
-    cat > $1/etc/protocols.tmp << EOF
+    cat > $1/etc/protocols << EOF
 hopopt         0 HOPOPT
 icmp           1 ICMP
 igmp           2 IGMP
@@ -359,13 +360,13 @@ nsh          145 NSH
 reserved     255 Reserved
 EOF
 # /etc/net_interface
-    echo "" > $1/etc/net_interface.tmp
+    echo "" > $1/etc/net_interface
 
-    cat > $1/etc/hosts.tmp << EOF
+    cat > $1/etc/hosts << EOF
 127.0.0.1  localhost sourimlinux
 ::1        localhost
 EOF
-    cat > $1/etc/passwd.tmp << "EOF"
+    cat > $1/etc/passwd << "EOF"
 root:x:0:0:root:/root:/bin/bash
 bin:x:1:1:bin:/dev/null:/usr/bin/false
 daemon:x:6:6:Daemon User:/dev/null:/usr/bin/false
@@ -373,7 +374,7 @@ messagebus:x:18:18:D-Bus Message Daemon User:/run/dbus:/usr/bin/false
 uuidd:x:80:80:UUID Generation Daemon User:/dev/null:/usr/bin/false
 nobody:x:65534:65534:Unprivileged User:/dev/null:/usr/bin/false
 EOF
-    cat > $1/etc/group.tmp << "EOF"
+    cat > $1/etc/group << "EOF"
 root:x:0:
 bin:x:1:daemon
 sys:x:2:
@@ -399,7 +400,7 @@ wheel:x:97:
 users:x:999:
 nogroup:x:65534:
 EOF
-    cat > $1/etc/hostname.tmp << EOF
+    cat > $1/etc/hostname << EOF
 sourimlinux
 EOF
     cat > $1/usr/bin/update-info-dir << EOF
@@ -441,14 +442,6 @@ EOF
 
 case \$1 in
     post)
-        for file in .bashrc .bash_profile; do
-            [[ ! -f /root/\$file ]] && cp /root/\$file.tmp /root/\$file
-            rm /root/\$file.tmp
-        done
-        for file in hostname group passwd hosts net_interface protocols resolv.conf; do
-            [[ ! -f /etc/\$file ]] && cp /etc/\$file.tmp /etc/\$file
-            rm /etc/\$file.tmp
-        done
         update-info-dir
         ;;
 esac

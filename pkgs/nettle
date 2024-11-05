@@ -1,6 +1,6 @@
 name="nettle"
 version="3.10"
-revision="1"
+revision="2"
 depends="glibc gmp"
 provides="libnettle.so.8 libhogweed.so.6"
 maintainer="Sigma Semka <bhzrd0@gmail.com>"
@@ -14,6 +14,7 @@ package() {
 	make &&
 	make install DESTDIR=$1 &&
 	chmod   -v   755 $1/usr/lib/lib{hogweed,nettle}.so &&
-	install -v -m755 -d $1/usr/share/doc/nettle-3.10 &&
-	install -v -m644 nettle.{html,pdf} $1/usr/share/doc/nettle-3.10
+	install -v -m755 -d $1/usr/share/doc/nettle-$version &&
+	install -v -m644 nettle.{html,pdf} $1/usr/share/doc/nettle-$version
+	rm -f $1/usr/share/info/dir
 }

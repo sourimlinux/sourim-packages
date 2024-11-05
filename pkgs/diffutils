@@ -1,5 +1,6 @@
 name="diffutils"
 version="3.10"
+revision="2"
 depends="glibc"
 maintainer="Andrey Stekolnikov <honakac@yandex.ru>"
 source=(
@@ -11,4 +12,5 @@ package() {
     ./configure --prefix=/usr
     make
     make install DESTDIR=$1
+    rm -f $1/usr/share/info/dir
 }
